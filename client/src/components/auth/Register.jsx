@@ -22,7 +22,7 @@ const Register = () => {
       const token = response.credential;
 
       const verify = await fetch(
-        "https://global-crm-our7.vercel.app/api/auth/google/register",
+        "https://global-crm-1zi3.vercel.app/api/auth/google/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
