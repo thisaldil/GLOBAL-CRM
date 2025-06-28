@@ -10,8 +10,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL:
-        "https://global-crm-our7.vercel.app/api/auth/google/callback",
+      callbackURL: "https://global-crm-1zi3.vercel.app/auth/google/callback",
 
       proxy: true,
     },
