@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const passport = require("passport");
-const connectDB = require("../database");
+const connectDB = require("./database");
 const crypto = require("crypto");
 
 const app = express();
@@ -15,11 +15,11 @@ app.use(
 app.use(express.json());
 app.use(passport.initialize());
 
-require("../models/User");
-require("../services/passport");
+require("./models/User");
+require("./services/passport");
 
-const authRoutes = require("../routes/authRoutes");
-const userRoutes = require("../routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
