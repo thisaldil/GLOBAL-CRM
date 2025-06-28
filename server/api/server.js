@@ -42,6 +42,12 @@ app.post("/generate-signature", (req, res) => {
   }
 });
 
+// ✅ Move this UP here
+app.get("/", (req, res) => {
+  res.send("CRM Backend API running");
+});
+
+// ✅ Must be last
 connectDB().catch((err) => {
   console.error("MongoDB connection error:", err);
 });
@@ -49,7 +55,3 @@ connectDB().catch((err) => {
 module.exports = (req, res) => {
   app(req, res);
 };
-
-app.get("/", (req, res) => {
-  res.send("CRM Backend API running");
-});
