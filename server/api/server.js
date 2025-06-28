@@ -49,3 +49,7 @@ connectDB().catch((err) => {
 module.exports = (req, res) => {
   app(req, res);
 };
+
+app.get("/", (req, res) => {
+  res.send("CRM Backend API running");
+});

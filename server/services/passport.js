@@ -12,6 +12,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
         "https://global-crm-our7.vercel.app/api/auth/google/callback",
+
       proxy: true,
     },
     async (accessToken, refreshToken, profile, done) => {
