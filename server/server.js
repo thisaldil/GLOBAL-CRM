@@ -18,17 +18,19 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "10mb" })); // Add size limit
 app.use(passport.initialize());
 
-// Connect MongoDB (with caching)
-(async () => {
+// Database connection middleware
+app.use(async (req, res, next) => {
   try {
     await connectDB();
+    next();
   } catch (err) {
     console.error("❌ MongoDB connection failed:", err.message);
+    return res.status(500).json({ error: "Database connection failed" });
   }
-})();
+});
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
