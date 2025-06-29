@@ -51,7 +51,6 @@ app.get("/", (req, res) => {
 connectDB().catch((err) => {
   console.error("MongoDB connection error:", err);
 });
+const serverless = require("serverless-http");
 
-module.exports = (req, res) => {
-  app(req, res);
-};
+module.exports = serverless(app);
