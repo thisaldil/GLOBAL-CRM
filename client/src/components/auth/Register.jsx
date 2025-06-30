@@ -57,7 +57,7 @@ const Register = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="536656085214-lflgf5vpabtlh57mt6jj5f4v2qpdu6o0.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="489842058415-t8qnn4bng8qkt6fi6ck92rmgal7aj40q.apps.googleusercontent.com">
       <div
         style={{
           backgroundImage: `url(${bg})`,
