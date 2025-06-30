@@ -1,52 +1,74 @@
-// ✅ Import all dependencies
+// server.js
+
+// ✅ 1. Import all necessary dependencies
+// The dotenv library is loaded to use environment variables.
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const passport = require("passport");
-const connectDB = require("../database"); // Assuming this connects to MongoDB
+const connectDB = require("./database"); // Assuming the connection logic is in this file
 const crypto = require("crypto");
-const cookieSession = require("cookie-session"); // 🚨 Add this for sessions
+const cookieSession = require("cookie-session"); // 🚨 Essential for Passport sessions
 
+// ✅ 2. Create the Express app instance
 const app = express();
 
-// ✅ Connect to MongoDB (connect once and reuse the connection)
-// This will be executed during the cold start.
+// ✅ 3. Connect to MongoDB
+// This function call will be executed during the serverless "cold start."
+// We don't need to listen for a port here, as Vercel handles the listener.
 connectDB().catch((err) => {
   console.error("MongoDB connection error:", err);
 });
 
-// ✅ Middlewares
+// ✅ 4. Set up Middlewares
+
+// CORS Configuration: Allows requests from your specific frontend domain.
+// `credentials: true` is crucial for sending and receiving cookies (like the session cookie).
 app.use(
   cors({
-    origin: "https://global-crm.vercel.app",
+    origin: process.env.FRONTEND_URL, // Use environment variable for flexibility
     credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", // Explicitly allow all methods including preflight
+    exposedHeaders: ["Content-Type", "Authorization"], // Expose necessary headers
   })
 );
+
+// Body Parser Middleware to parse JSON request bodies
 app.use(express.json());
 
-// 🚨 Use cookie-session for Passport authentication
+// 🚨 Cookie Session Middleware for Passport.js
+// This creates a cookie-based session to store user information after authentication.
+// It is required for passport.session() to function correctly.
 app.use(
   cookieSession({
     name: "session",
-    // 🚨 Use a secret from environment variables
+    // `keys` should be an array of secret keys to sign the session cookie.
+    // Use an environment variable to keep it secret.
     keys: [process.env.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    // Set `secure` to true in production if you are using HTTPS (which Vercel does).
+    // `sameSite` should be 'none' for cross-site cookie support with `credentials: true`.
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   })
 );
 
+// 🚨 Initialize Passport and its session middleware
+// These must be used after the session middleware (cookieSession).
 app.use(passport.initialize());
-app.use(passport.session()); // 🚨 Use passport session middleware
+app.use(passport.session());
 
-// ✅ Models & Passport
-require("../models/User");
-require("../services/passport");
+// ✅ 5. Require and set up Passport and Mongoose Models
+// These files contain your Mongoose schema and Passport.js strategy logic.
+require("./models/User"); // Path to your User Mongoose model
+require("./services/passport"); // Path to your Passport configuration
 
-// ✅ Routes
-const authRoutes = require("../routes/authRoutes");
-const userRoutes = require("../routes/userRoutes");
-const templateRoutes = require("../routes/templateRoutes");
-const invoiceRoutes = require("../routes/invoiceRoutes");
-const ocrRoutes = require("../routes/ocrRoutes");
+// ✅ 6. Require and use Route handlers
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const templateRoutes = require("./routes/templateRoutes");
+const invoiceRoutes = require("./routes/invoiceRoutes");
+const ocrRoutes = require("./routes/ocrRoutes");
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
@@ -54,7 +76,7 @@ app.use("/template", templateRoutes);
 app.use("/invoice", invoiceRoutes);
 app.use("/ocr", ocrRoutes);
 
-// ✅ Signature API
+// ✅ 7. Custom API Route: Cloudinary Signature Generation
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
 app.post("/generate-signature", (req, res) => {
@@ -73,10 +95,14 @@ app.post("/generate-signature", (req, res) => {
   }
 });
 
-// ✅ Root test route
+// ✅ 8. Root test route
+// A simple route to check if the function is running.
 app.get("/", (req, res) => {
   res.send("CRM Backend is running.");
 });
 
-// 🚨 Export the app for Vercel, don't use `serverless-http`
+// ✅ 9. EXPORT THE EXPRESS APP FOR VERCEL
+// This is the most critical step for Vercel deployment.
+// You no longer need to use `app.listen()` or `serverless-http`.
+// Vercel's `@vercel/node` runtime will handle the HTTP server for you.
 module.exports = app;
