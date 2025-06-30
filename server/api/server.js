@@ -8,7 +8,7 @@ const crypto = require("crypto");
 const app = express();
 app.use(
   cors({
-    origin: "https://air-invoice-client.vercel.app",
+    origin: "https://global-crm.vercel.app",
     credentials: true,
   })
 );
