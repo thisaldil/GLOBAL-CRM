@@ -4,42 +4,33 @@ const cors = require("cors");
 const passport = require("passport");
 const connectDB = require("./database");
 const crypto = require("crypto");
-const serverless = require("serverless-http");
+
+const app = express();
+
+// ✅ Use localhost frontend origin during development
+app.use(
+  cors({
+    origin: "http://localhost:3000", // 👉 replace with deployed frontend URL for production
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+app.use(passport.initialize());
 
 require("./models/User");
 require("./services/passport");
 
-const app = express();
-
-// Middleware
-app.use(
-  cors({
-    origin: "https://global-crm.vercel.app",
-    credentials: true,
-  })
-);
-app.use(express.json({ limit: "10mb" })); // Add size limit
-app.use(passport.initialize());
-
-// Database connection middleware
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error("❌ MongoDB connection failed:", err.message);
-    return res.status(500).json({ error: "Database connection failed" });
-  }
-});
-
-// Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 
+// ✅ Main API routes
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 
-// Cloudinary Signature Route
+// ✅ Cloudinary Signature API
+const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
+
 app.post("/generate-signature", (req, res) => {
   try {
     const { timestamp } = req.body;
@@ -49,20 +40,34 @@ app.post("/generate-signature", (req, res) => {
 
     const signature = crypto
       .createHash("sha1")
-      .update(`timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`)
+      .update(`timestamp=${timestamp}${CLOUDINARY_API_SECRET}`)
       .digest("hex");
 
     res.json({ signature });
   } catch (error) {
-    console.error("Signature Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// Root route
+// ✅ Root endpoint
 app.get("/", (req, res) => {
-  res.send("✅ CRM Backend API is running.");
+  res.send("CRM Backend API running on localhost");
 });
 
-// Export for Vercel
+// ✅ Start Express server after DB connects
+const PORT = process.env.PORT || 5000;
+
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+  });
+
+/* ❌ FOR VERCEL SERVERLESS DEPLOYMENT (DISABLED FOR LOCALHOST)
+const serverless = require("serverless-http");
 module.exports = serverless(app);
+*/

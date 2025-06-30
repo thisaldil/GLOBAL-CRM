@@ -20,7 +20,12 @@ const Login = () => {
   const handleSuccess = async (response) => {
     try {
       const res = await fetch(
-        "https://global-crm-1zi3.vercel.app/api/auth/google/callback",
+        // 👉 LOCALHOST BACKEND DURING DEVELOPMENT
+        "http://localhost:5000/auth/google/callback",
+
+        // ❌ PRODUCTION URL (COMMENTED FOR NOW)
+        // "https://global-crm-1zi3.vercel.app/api/auth/google/callback",
+
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -70,7 +75,7 @@ const Login = () => {
         }}
         className="relative flex h-screen w-full overflow-hidden bg-gray-100"
       >
-        {/* Right Side (Login Box) */}
+        {/* Left Side (Info) */}
         <div className="hidden md:block absolute left-0 top-0 h-full w-1/2 text-white z-0">
           <div className="flex flex-col justify-center items-center h-full px-12">
             <motion.img
@@ -93,7 +98,7 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Left Side (Form) */}
+        {/* Right Side (Form) */}
         <div className="w-full md:w-1/2 z-10 flex justify-center items-center ml-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
