@@ -22,16 +22,21 @@ connectDB().catch((err) => {
 
 // ✅ 4. Set up Middlewares
 
-// CORS Configuration: Allows requests from your specific frontend domain.
-// `credentials: true` is crucial for sending and receiving cookies (like the session cookie).
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL, // Use environment variable for flexibility
-    credentials: true,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", // Explicitly allow all methods including preflight
-    exposedHeaders: ["Content-Type", "Authorization"], // Expose necessary headers
-  })
-);
+// Define CORS options once for clarity and reusability
+const corsOptions = {
+  origin: process.env.FRONTEND_URL, // Use environment variable for flexibility
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", // Explicitly allow all methods
+  exposedHeaders: ["Content-Type", "Authorization"], // Expose necessary headers
+};
+
+// Apply CORS middleware to all requests
+app.use(cors(corsOptions));
+
+// 🚨 FIX: Explicitly handle CORS preflight OPTIONS requests for all routes.
+// This is a crucial step for serverless platforms like Vercel to ensure the
+// preflight handshake succeeds before the actual request is sent.
+app.options("*", cors(corsOptions));
 
 // Body Parser Middleware to parse JSON request bodies
 app.use(express.json());
@@ -41,13 +46,9 @@ app.use(express.json());
 // It is required for passport.session() to function correctly.
 app.use(
   cookieSession({
-    name: "session",
-    // `keys` should be an array of secret keys to sign the session cookie.
-    // Use an environment variable to keep it secret.
+    name: "session", // `keys` should be an array of secret keys to sign the session cookie. // Use an environment variable to keep it secret.
     keys: [process.env.SESSION_SECRET],
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    // Set `secure` to true in production if you are using HTTPS (which Vercel does).
-    // `sameSite` should be 'none' for cross-site cookie support with `credentials: true`.
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours // Set `secure` to true in production if you are using HTTPS (which Vercel does). // `sameSite` should be 'none' for cross-site cookie support with `credentials: true`.
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   })
