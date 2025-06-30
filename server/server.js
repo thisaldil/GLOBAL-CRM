@@ -4,20 +4,25 @@ const cors = require("cors");
 const passport = require("passport");
 const connectDB = require("../database");
 const crypto = require("crypto");
+const serverless = require("serverless-http"); // ✅ For Vercel
 
 const app = express();
+
+// ✅ CORS for frontend
 app.use(
   cors({
-    origin: "https://global-crm.vercel.app",
+    origin: "https://global-crm.vercel.app", // ✅ Vercel frontend
     credentials: true,
   })
 );
 app.use(express.json());
 app.use(passport.initialize());
 
+// ✅ Models & Passport
 require("../models/User");
 require("../services/passport");
 
+// ✅ Routes
 const authRoutes = require("../routes/authRoutes");
 const userRoutes = require("../routes/userRoutes");
 const templateRoutes = require("../routes/templateRoutes");
@@ -30,6 +35,7 @@ app.use("/template", templateRoutes);
 app.use("/invoice", invoiceRoutes);
 app.use("/ocr", ocrRoutes);
 
+// ✅ Signature API
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
 app.post("/generate-signature", (req, res) => {
@@ -48,10 +54,15 @@ app.post("/generate-signature", (req, res) => {
   }
 });
 
+// ✅ Root test route (optional)
+app.get("/", (req, res) => {
+  res.send("CRM Backend is running.");
+});
+
+// ✅ Mongo Connect
 connectDB().catch((err) => {
   console.error("MongoDB connection error:", err);
 });
 
-module.exports = (req, res) => {
-  app(req, res);
-};
+// ✅ Export for Vercel serverless
+module.exports = serverless(app);
