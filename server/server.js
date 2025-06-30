@@ -1,22 +1,41 @@
+// ✅ Import all dependencies
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const passport = require("passport");
-const connectDB = require("../database");
+const connectDB = require("../database"); // Assuming this connects to MongoDB
 const crypto = require("crypto");
-const serverless = require("serverless-http"); // ✅ For Vercel
+const cookieSession = require("cookie-session"); // 🚨 Add this for sessions
 
 const app = express();
 
-// ✅ CORS for frontend
+// ✅ Connect to MongoDB (connect once and reuse the connection)
+// This will be executed during the cold start.
+connectDB().catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
+
+// ✅ Middlewares
 app.use(
   cors({
-    origin: "https://global-crm.vercel.app", // ✅ Vercel frontend
+    origin: "https://global-crm.vercel.app",
     credentials: true,
   })
 );
 app.use(express.json());
+
+// 🚨 Use cookie-session for Passport authentication
+app.use(
+  cookieSession({
+    name: "session",
+    // 🚨 Use a secret from environment variables
+    keys: [process.env.SESSION_SECRET],
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  })
+);
+
 app.use(passport.initialize());
+app.use(passport.session()); // 🚨 Use passport session middleware
 
 // ✅ Models & Passport
 require("../models/User");
@@ -54,15 +73,10 @@ app.post("/generate-signature", (req, res) => {
   }
 });
 
-// ✅ Root test route (optional)
+// ✅ Root test route
 app.get("/", (req, res) => {
   res.send("CRM Backend is running.");
 });
 
-// ✅ Mongo Connect
-connectDB().catch((err) => {
-  console.error("MongoDB connection error:", err);
-});
-
-const serverless = require("serverless-http");
-module.exports = serverless(app); // ✅ for Vercel serverless
+// 🚨 Export the app for Vercel, don't use `serverless-http`
+module.exports = app;
