@@ -29,13 +29,16 @@ const Register = () => {
           body: JSON.stringify({ token }),
         }
       );
-
+      // ... inside handleSuccess function
       if (!verify.ok) {
-        const msg = await verify.json();
-        toast.error("Registration failed. Please try again.");
+        const errorData = await verify.json(); // Get the JSON response
+        // Use the message from the backend, or a default if not available
+        toast.error(
+          errorData.message || "Registration failed. Please try again."
+        );
         return;
       }
-
+      // ... rest of the code
       const data = await verify.json();
 
       if (data.token) {
