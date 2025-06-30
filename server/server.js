@@ -64,5 +64,5 @@ connectDB().catch((err) => {
   console.error("MongoDB connection error:", err);
 });
 
-// ✅ Export for Vercel serverless
-module.exports = serverless(app);
+const serverless = require("serverless-http");
+module.exports = serverless(app); // ✅ for Vercel serverless
