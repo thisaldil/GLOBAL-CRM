@@ -8,10 +8,11 @@ const serverless = require("serverless-http"); // ✅ For Vercel
 
 const app = express();
 
-// ✅ CORS for frontend
 app.use(
   cors({
-    origin: "https://global-crm.vercel.app", // ✅ Vercel frontend
+    origin: "https://global-crm.vercel.app", // ✅ Must match frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
