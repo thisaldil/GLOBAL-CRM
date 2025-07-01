@@ -112,7 +112,7 @@ function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <Link
-          to="/dashboard/customers/add"
+          to="/addcustomer"
           className="bg-blue-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
         >
           <div className="flex items-center">

@@ -6,7 +6,7 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 
 import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
@@ -20,6 +20,7 @@ import Register from "./components/auth/Register.jsx";
 import AllInvoices from "./components/AllInvoices";
 import Settings from "./components/Settings";
 import Crm from "./components/Crm";
+import AddCustomer from "./components/AddCustomer";
 
 function AppWrapper() {
   const [uploadedInvoice, setUploadedInvoice] = useState(null);
@@ -164,6 +165,7 @@ function AppWrapper() {
               />
             }
           />
+          <Route path="addcustomer" element={<AddCustomer />} />
           <Route path="crm" element={<Crm />} />
           <Route path="settings" element={<Settings />} />
         </Route>
