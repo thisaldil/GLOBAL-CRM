@@ -11,7 +11,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import logo from "../images/logo.png";
+
 import darklogo from "../images/drklogo.png";
 
 function Layout() {
@@ -38,7 +38,7 @@ function Layout() {
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow px-4 py-3 flex justify-between items-center">
-        <img src={logo} alt="logo" className="h-6 dark:hidden" />
+        <img src={darklogo} alt="logo" className="h-6 dark:hidden" />
         <img src={darklogo} alt="logo" className="h-6 hidden dark:block" />
         <button onClick={() => setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? (
@@ -56,7 +56,11 @@ function Layout() {
         } md:translate-x-0`}
       >
         <div className="hidden md:block p-6 border-b border-gray-200 dark:border-gray-700">
-          <img src={logo} alt="logo" className="max-w-32 block dark:hidden" />
+          <img
+            src={darklogo}
+            alt="dark logo"
+            className="max-w-32 block dark:hidden"
+          />
           <img
             src={darklogo}
             alt="dark logo"
