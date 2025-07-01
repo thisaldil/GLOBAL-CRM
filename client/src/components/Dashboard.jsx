@@ -1,144 +1,407 @@
-// src/components/Dashboard.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  Users,
+  Mail,
+  Send,
+  TrendingUp,
+  UserPlus,
+  BarChart3,
+  Eye,
+  Edit,
+  Trash2,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
-const Dashboard = () => {
+function Dashboard() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  const [recentCustomers, setRecentCustomers] = useState([]);
+  const [emailCampaigns, setEmailCampaigns] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(storedUser);
+
+    // Fetch recent customers
+    fetch("https://your-crm-server.vercel.app/customers/recent", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const formatted = data.map((customer) => ({
+          id: customer._id,
+          name: customer.name || "N/A",
+          email: customer.email || "N/A",
+          company: customer.company || "N/A",
+          phone: customer.phone || "N/A",
+          status: customer.status || "Active",
+          lastContact: customer.lastContact
+            ? new Date(customer.lastContact).toLocaleDateString()
+            : "Never",
+          createdAt: customer.createdAt
+            ? new Date(customer.createdAt).toLocaleDateString()
+            : "N/A",
+        }));
+        setRecentCustomers(formatted);
+      })
+      .catch((err) => {
+        console.error("Failed to load recent customers", err);
+      });
+
+    // Fetch email campaigns
+    fetch("https://your-crm-server.vercel.app/campaigns/recent", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const formatted = data.map((campaign) => ({
+          id: campaign._id,
+          name: campaign.name,
+          subject: campaign.subject,
+          recipients: campaign.recipients?.length || 0,
+          openRate: campaign.analytics?.openRate || 0,
+          clickRate: campaign.analytics?.clickRate || 0,
+          status: campaign.status || "Draft",
+          sentAt: campaign.sentAt
+            ? new Date(campaign.sentAt).toLocaleDateString()
+            : "Not sent",
+        }));
+        setEmailCampaigns(formatted);
+      })
+      .catch((err) => {
+        console.error("Failed to load email campaigns", err);
+      });
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div>
       {/* Header */}
-      <header className="flex justify-between items-center mb-10">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
           CRM Dashboard
         </h1>
-        <div className="flex items-center space-x-4">
-          <span className="text-lg text-blue-300">Welcome, Admin!</span>
-          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-xl font-semibold">
-            AD {/* Initials */}
+        {user && (
+          <div className="flex items-center space-x-3">
+            <span className="hidden md:block text-gray-700 font-medium dark:text-white">
+              {user.name}
+            </span>
+            <img
+              src={
+                user.picture
+                  ?.replace("=s96-c", "")
+                  ?.replace("http://", "https://") || "/default-avatar.png"
+              }
+              alt={user.name}
+              className="w-10 h-10 object-cover rounded-full border border-gray-300"
+            />
           </div>
-        </div>
-      </header>
+        )}
+      </div>
 
-      {/* Main Content Area */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Card 1: Customer Overview */}
-        <div className="bg-gray-800 rounded-lg shadow-lg p-6 border-t-4 border-orange-500">
-          <h2 className="text-2xl font-bold mb-4 text-orange-400">
-            Customer Overview
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <Link
+          to="/dashboard/customers/add"
+          className="bg-blue-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center">
+            <div className="bg-white bg-opacity-30 p-3 rounded-full">
+              <UserPlus className="w-6 h-6" />
+            </div>
+            <div className="ml-4 text-left">
+              <h3 className="text-xl font-semibold">Add New Customer</h3>
+              <p className="text-sm text-white text-opacity-90">
+                Create and manage customer profiles
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          to="/dashboard/campaigns/create"
+          className="bg-green-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center">
+            <div className="bg-white bg-opacity-30 p-3 rounded-full">
+              <Mail className="w-6 h-6" />
+            </div>
+            <div className="ml-4 text-left">
+              <h3 className="text-xl font-semibold">Create Email Campaign</h3>
+              <p className="text-sm text-white text-opacity-90">
+                Send targeted email campaigns
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          to="/dashboard/analytics"
+          className="bg-purple-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center">
+            <div className="bg-white bg-opacity-30 p-3 rounded-full">
+              <BarChart3 className="w-6 h-6" />
+            </div>
+            <div className="ml-4 text-left">
+              <h3 className="text-xl font-semibold">View Analytics</h3>
+              <p className="text-sm text-white text-opacity-90">
+                Track performance and insights
+              </p>
+            </div>
+          </div>
+        </Link>
+      </div>
+
+      {/* Recent Customers */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-700 dark:text-white">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+            Recent Customers
           </h2>
-          <p className="text-gray-300">
-            Total Customers:{" "}
-            <span className="text-blue-300 text-xl font-semibold">1200</span>
-          </p>
-          <p className="text-gray-300">
-            New Customers This Month:{" "}
-            <span className="text-blue-300 text-xl font-semibold">45</span>
-          </p>
-          <button className="mt-5 px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-md hover:from-blue-600 hover:to-blue-800 transition duration-300">
+          <Link
+            to="/dashboard/customers"
+            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+          >
             View All Customers
-          </button>
+          </Link>
         </div>
-
-        {/* Card 2: Email Campaigns */}
-        <div className="bg-gray-800 rounded-lg shadow-lg p-6 border-t-4 border-blue-500">
-          <h2 className="text-2xl font-bold mb-4 text-blue-400">
-            Email Campaigns
-          </h2>
-          <p className="text-gray-300">
-            Emails Sent Today:{" "}
-            <span className="text-orange-300 text-xl font-semibold">5000</span>
-          </p>
-          <p className="text-gray-300">
-            Pending Emails:{" "}
-            <span className="text-orange-300 text-xl font-semibold">150</span>
-          </p>
-          <button className="mt-5 px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-700 text-white rounded-md hover:from-orange-600 hover:to-orange-800 transition duration-300">
-            Manage Campaigns
-          </button>
-        </div>
-
-        {/* Card 3: Quick Actions */}
-        <div className="bg-gray-800 rounded-lg shadow-lg p-6 border-t-4 border-orange-500">
-          <h2 className="text-2xl font-bold mb-4 text-orange-400">
-            Quick Actions
-          </h2>
-          <ul className="space-y-3">
-            <li>
-              <a
-                href="#"
-                className="flex items-center text-blue-300 hover:text-blue-500 transition duration-200"
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-600">
+                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Customer
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Company
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Last Contact
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-right text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentCustomers.map((customer) => (
+                <tr
+                  key={customer.id}
+                  className="border-b border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  ></path>
-                </svg>
-                Add New Customer
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center text-blue-300 hover:text-blue-500 transition duration-200"
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  ></path>
-                </svg>
-                Create Email Template
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center text-blue-300 hover:text-blue-500 transition duration-200"
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  ></path>
-                </svg>
-                Edit Profile
-              </a>
-            </li>
-          </ul>
+                  <td className="py-4 px-4">
+                    <div>
+                      <div className="text-sm font-medium text-gray-800 dark:text-white">
+                        {customer.name}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300">
+                        {customer.email}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
+                    {customer.company}
+                  </td>
+                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
+                    {customer.lastContact}
+                  </td>
+                  <td className="py-4 px-4">
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        customer.status === "Active"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                          : customer.status === "Inactive"
+                          ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                          : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                      }`}
+                    >
+                      {customer.status}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4 text-right">
+                    <button className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 mr-2">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button className="text-green-600 hover:text-green-800 dark:text-green-500 dark:hover:text-green-400">
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Footer (Optional) */}
-      <footer className="mt-10 text-center text-gray-500 text-sm">
-        <p>
-          &copy; {new Date().getFullYear()} CRM Project. All rights reserved.
-        </p>
-      </footer>
+      {/* Recent Email Campaigns */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-700 dark:text-white">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+            Recent Email Campaigns
+          </h2>
+          <Link
+            to="/dashboard/campaigns"
+            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+          >
+            View All Campaigns
+          </Link>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-600">
+                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Campaign
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Recipients
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Open Rate
+                </th>
+                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-right text-sm font-medium text-gray-500 dark:text-gray-300">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {emailCampaigns.map((campaign) => (
+                <tr
+                  key={campaign.id}
+                  className="border-b border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  <td className="py-4 px-4">
+                    <div>
+                      <div className="text-sm font-medium text-gray-800 dark:text-white">
+                        {campaign.name}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300">
+                        {campaign.subject}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
+                    {campaign.recipients}
+                  </td>
+                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
+                    {campaign.openRate}%
+                  </td>
+                  <td className="py-4 px-4">
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        campaign.status === "Sent"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                          : campaign.status === "Draft"
+                          ? "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                          : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                      }`}
+                    >
+                      {campaign.status}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4 text-right">
+                    <button className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          {
+            label: "Total Customers",
+            value: "1,247",
+            change: "+15%",
+            icon: Users,
+            color: "blue",
+          },
+          {
+            label: "Email Campaigns",
+            value: "38",
+            change: "+8%",
+            icon: Mail,
+            color: "green",
+          },
+          {
+            label: "Avg. Open Rate",
+            value: "24.5%",
+            change: "+3.2%",
+            icon: TrendingUp,
+            color: "purple",
+          },
+          {
+            label: "Active Customers",
+            value: "892",
+            change: "+12%",
+            icon: Users,
+            color: "orange",
+          },
+        ].map((stat, index) => {
+          const IconComponent = stat.icon;
+          return (
+            <div
+              key={index}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div
+                  className={`p-2 rounded-lg bg-${stat.color}-100 dark:bg-${stat.color}-900`}
+                >
+                  <IconComponent
+                    className={`w-5 h-5 text-${stat.color}-600 dark:text-${stat.color}-400`}
+                  />
+                </div>
+                <span
+                  className={`text-sm font-medium ${
+                    stat.change.startsWith("+")
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {stat.change}
+                </span>
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                {stat.label}
+              </p>
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+                {stat.value}
+              </h3>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
-};
+}
 
 export default Dashboard;
