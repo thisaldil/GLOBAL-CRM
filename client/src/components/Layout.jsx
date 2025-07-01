@@ -21,9 +21,9 @@ function Layout() {
 
   const menuItems = [
     { path: "/dashboard", label: "Dashboard", icon: HomeIcon },
-    { path: "/dashboard/upload", label: "New Invoice", icon: FileTextIcon },
-    { path: "/dashboard/templates", label: "Templates", icon: BoxIcon },
-    { path: "/dashboard/invoices", label: "All Invoices", icon: FilesIcon },
+    // { path: "/dashboard/upload", label: "New Invoice", icon: FileTextIcon },
+    // { path: "/dashboard/templates", label: "Templates", icon: BoxIcon },
+    // { path: "/dashboard/invoices", label: "All Invoices", icon: FilesIcon },
     { path: "/dashboard/crm", label: "CRM", icon: Users },
     { path: "/dashboard/settings", label: "Settings", icon: SettingsIcon },
   ];
@@ -41,7 +41,11 @@ function Layout() {
         <img src={logo} alt="logo" className="h-6 dark:hidden" />
         <img src={darklogo} alt="logo" className="h-6 hidden dark:block" />
         <button onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {sidebarOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
         </button>
       </div>
 
@@ -53,7 +57,11 @@ function Layout() {
       >
         <div className="hidden md:block p-6 border-b border-gray-200 dark:border-gray-700">
           <img src={logo} alt="logo" className="max-w-32 block dark:hidden" />
-          <img src={darklogo} alt="dark logo" className="max-w-32 hidden dark:block" />
+          <img
+            src={darklogo}
+            alt="dark logo"
+            className="max-w-32 hidden dark:block"
+          />
         </div>
 
         <nav className="mt-6">
