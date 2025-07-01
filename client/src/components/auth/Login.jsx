@@ -77,7 +77,7 @@ const Login = () => {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6 }}
-              src="/drklogo.png"
+              src="/logo.png"
               alt="Logo"
               className="w-72 mb-6"
             />
@@ -88,7 +88,7 @@ const Login = () => {
               className="text-xl leading-relaxed font-medium text-center max-w-lg text-gray-700"
             >
               Manage your invoices with ease. Automate, track, and send invoices
-              effortlessly using AirInvoice Pro.
+              effortlessly using CRM.
             </motion.p>
           </div>
         </div>

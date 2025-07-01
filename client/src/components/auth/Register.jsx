@@ -86,7 +86,7 @@ const Register = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-xl leading-relaxed font-medium text-center max-w-lg text-gray-700"
             >
-              Join AirInvoice Pro to manage your invoices with ease. Automate,
+              Join GLOBAL CRM to manage your invoices with ease. Automate,
               track, and send invoices effortlessly.
             </motion.p>
           </div>

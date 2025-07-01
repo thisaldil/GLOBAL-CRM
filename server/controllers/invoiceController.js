@@ -17,12 +17,14 @@ exports.uploadInvoice = async (req, res) => {
 
     const convert = fromPath(filePath, { density: 200, savePath: outputDir });
     const imagePages = await convert.bulk(-1);
-    const imageFiles = imagePages.map(p => p.path);
+    const imageFiles = imagePages.map((p) => p.path);
 
     let fullText = "";
 
     for (const imgPath of imageFiles) {
-      const { data: { text } } = await Tesseract.recognize(imgPath, "eng");
+      const {
+        data: { text },
+      } = await Tesseract.recognize(imgPath, "eng");
       fullText += text + "\n";
     }
 
@@ -40,7 +42,15 @@ exports.uploadInvoice = async (req, res) => {
 exports.saveInvoiceDetails = async (req, res) => {
   const { userId, pdfUrl, template, invoiceDetails, priceDetails } = req.body;
 
-  if (!userId || !pdfUrl || !template?._id || !invoiceDetails?.bookingReference || !invoiceDetails?.passengerName || !invoiceDetails?.passengers || !priceDetails) {
+  if (
+    !userId ||
+    !pdfUrl ||
+    !template?._id ||
+    !invoiceDetails?.bookingReference ||
+    !invoiceDetails?.passengerName ||
+    !invoiceDetails?.passengers ||
+    !priceDetails
+  ) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -151,9 +161,9 @@ exports.sendInvoiceEmail = async (req, res) => {
       subject: "Your Invoice from AirInvoice",
       html: `
           <div style="font-family: 'Segoe UI', sans-serif; padding: 20px; color: #333;">
-            <h2 style="color: #004cc7;">✈️ AirInvoice Pro</h2>
+            <h2 style="color: #004cc7;">✈️ GLOBAL CRM</h2>
             <p>Dear Customer,</p>
-            <p>Thank you for choosing AirInvoice Pro.</p>
+            <p>Thank you for choosing GLOBAL CRM.</p>
             <p>Please find your attached invoice below.</p>
 
             <div style="margin: 20px 0; padding: 16px; background-color: #f4f8ff; border-left: 4px solid #004cc7;">
@@ -161,11 +171,11 @@ exports.sendInvoiceEmail = async (req, res) => {
               If you have any questions, just reply to this email.
             </div>
 
-            <p style="font-size: 14px;">Best regards,<br/><strong>The AirInvoice Pro Team</strong></p>
+            <p style="font-size: 14px;">Best regards,<br/><strong>The GLOBAL CRM Team</strong></p>
 
             <hr style="margin-top: 30px;"/>
             <p style="font-size: 12px; color: #888;">
-              © ${new Date().getFullYear()} AirInvoice Pro. All rights reserved.
+              © ${new Date().getFullYear()} GLOBAL CRM. All rights reserved.
             </p>
           </div>`,
       attachments: [
