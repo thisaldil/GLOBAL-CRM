@@ -213,14 +213,20 @@ exports.deleteInvoice = async (req, res) => {
 
 exports.getRecentInvoices = async (req, res) => {
   try {
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized: No user logged in" });
+    }
+
     const recentInvoices = await Invoice.find(
-      {},
+      { userId },
       {
         "invoiceDetails.passengerName": 1,
         "invoiceDetails.passportNumber": 1,
         "invoiceDetails.nationality": 1,
         "priceDetails.totalAmount": 1,
-        createdAt: 1, // include this if you want date
+        createdAt: 1,
       }
     )
       .sort({ createdAt: -1 })
