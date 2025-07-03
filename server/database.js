@@ -6,10 +6,7 @@ const uri = process.env.URI;
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGO_URI);
 
     // Optional console log for development
     if (process.env.NODE_ENV !== "deployment") {
