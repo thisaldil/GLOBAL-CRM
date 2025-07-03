@@ -2,7 +2,7 @@ const Customer = require("../models/customer");
 
 // @desc    Create a new customer
 // @route   POST /api/customers
-exports.createCustomer = async (req, res) => {
+const createCustomer = async (req, res) => {
   try {
     const existing = await Customer.findOne({ email: req.body.email });
     if (existing) {
@@ -21,7 +21,7 @@ exports.createCustomer = async (req, res) => {
 
 // @desc    Get all customers (with optional search/filter)
 // @route   GET /api/customers
-exports.getAllCustomers = async (req, res) => {
+const getAllCustomers = async (req, res) => {
   try {
     const { search, status, tag } = req.query;
     const query = {};
@@ -46,7 +46,7 @@ exports.getAllCustomers = async (req, res) => {
 
 // @desc    Get a single customer by ID
 // @route   GET /api/customers/:id
-exports.getCustomerById = async (req, res) => {
+const getCustomerById = async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id);
     if (!customer)
@@ -59,7 +59,7 @@ exports.getCustomerById = async (req, res) => {
 
 // @desc    Update customer by ID
 // @route   PUT /api/customers/:id
-exports.updateCustomer = async (req, res) => {
+const updateCustomer = async (req, res) => {
   try {
     const updated = await Customer.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -75,7 +75,7 @@ exports.updateCustomer = async (req, res) => {
 
 // @desc    Delete customer by ID
 // @route   DELETE /api/customers/:id
-exports.deleteCustomer = async (req, res) => {
+const deleteCustomer = async (req, res) => {
   try {
     const deleted = await Customer.findByIdAndDelete(req.params.id);
     if (!deleted)
@@ -88,22 +88,25 @@ exports.deleteCustomer = async (req, res) => {
 
 // @desc    Bulk update status or tags
 // @route   PATCH /api/customers/bulk-update
-exports.bulkUpdateCustomers = async (req, res) => {
+const bulkUpdateCustomers = async (req, res) => {
   try {
-    const { ids, updates } = req.body; // ids = [id1, id2, ...]; updates = { status: "Active" }
+    const { ids, updates } = req.body;
 
     const result = await Customer.updateMany(
       { _id: { $in: ids } },
       { $set: updates }
     );
 
-    res
-      .status(200)
-      .json({ message: "Customers updated", modifiedCount: result.nModified });
+    res.status(200).json({
+      message: "Customers updated",
+      modifiedCount: result.nModified || result.modifiedCount,
+    });
   } catch (error) {
     res.status(500).json({ message: "Bulk update failed", error });
   }
 };
+
+// ✅ Export all controller functions
 module.exports = {
   createCustomer,
   getAllCustomers,
