@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const API_BASE = "https://air-invoice-server.vercel.app";
+const API_BASE = "https://global-crm-1zi3.vercel.app";
 
 const CustomerManagementApp = () => {
   const [customers, setCustomers] = useState([]);
