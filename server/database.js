@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI; // ✅ This must match your env var key exactly
+  const uri = process.env.URI; // ✅ This must match your env var key exactly
   if (!uri) {
     throw new Error("❌ MONGO_URI is not defined in environment variables.");
   }
