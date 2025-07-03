@@ -1,20 +1,20 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-// Get MongoDB URI from environment variables
-const uri = process.env.URI;
-
 const connectDB = async () => {
-  try {
-    await mongoose.connect(MONGO_URI);
+  const uri = process.env.MONGO_URI; // ✅ This must match your env var key exactly
+  if (!uri) {
+    throw new Error("❌ MONGO_URI is not defined in environment variables.");
+  }
 
-    // Optional console log for development
+  try {
+    await mongoose.connect(uri);
     if (process.env.NODE_ENV !== "deployment") {
       console.log("✅ MongoDB connected successfully");
     }
   } catch (err) {
     console.error("❌ MongoDB connection error:", err.message);
-    process.exit(1); // Exit process with failure
+    process.exit(1);
   }
 };
 
