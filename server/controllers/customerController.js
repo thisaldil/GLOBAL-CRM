@@ -104,3 +104,11 @@ exports.bulkUpdateCustomers = async (req, res) => {
     res.status(500).json({ message: "Bulk update failed", error });
   }
 };
+module.exports = {
+  createCustomer,
+  getAllCustomers,
+  getCustomerById,
+  updateCustomer,
+  deleteCustomer,
+  bulkUpdateCustomers,
+};
