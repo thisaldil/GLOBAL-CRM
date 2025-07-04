@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-<<<<<<< HEAD
 import {
   Users,
   Mail,
@@ -9,76 +8,121 @@ import {
   BarChart3,
   Eye,
   Edit,
-  Trash2,
+  Trash2, // Keeping Trash2 for consistency, though not used in dashboard table actions
 } from "lucide-react";
-=======
-import { FileTextIcon, FileUpIcon, SendIcon, BoxIcon } from "lucide-react";
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"; // Assuming react-hot-toast is installed
+
+const API_BASE = "https://global-crm-1zi3.vercel.app"; // Consistent API base URL
 
 function Dashboard() {
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
-
-<<<<<<< HEAD
   const [recentCustomers, setRecentCustomers] = useState([]);
   const [emailCampaigns, setEmailCampaigns] = useState([]);
-=======
-  const [recentInvoices, setRecentInvoices] = useState([]);
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
+  const [stats, setStats] = useState({}); // State for dashboard statistics
+  const [loadingCustomers, setLoadingCustomers] = useState(true);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(true);
 
+  const navigate = useNavigate();
+
+  // Helper function for status colors (can be reused from CustomerManagementApp)
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Active":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      case "Inactive":
+      case "Lost": // Mapping "Lost" from backend schema to a red status
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+      case "Trial":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+    }
+  };
+
+  // Fetch user data and authenticate
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/login");
+      navigate("/login"); // Redirect to login if no token
       return;
     }
 
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
 
-<<<<<<< HEAD
     // Fetch recent customers
-    fetch("https://your-crm-server.vercel.app/customers/recent", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const formatted = data.map((customer) => ({
+    const fetchRecentCustomers = async () => {
+      setLoadingCustomers(true);
+      try {
+        const res = await fetch(`${API_BASE}/customers`, {
+          // Fetch all customers
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to load recent customers");
+        }
+        const data = await res.json();
+        // Sort by createdAt and take the first 5 for "recent"
+        const sortedRecent = data
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 5);
+
+        const formatted = sortedRecent.map((customer) => ({
           id: customer._id,
-          name: customer.name || "N/A",
+          fullName: customer.fullName || "N/A", // Use fullName from schema
           email: customer.email || "N/A",
           company: customer.company || "N/A",
           phone: customer.phone || "N/A",
-          status: customer.status || "Active",
-          lastContact: customer.lastContact
-            ? new Date(customer.lastContact).toLocaleDateString()
+          status: customer.status || "Active", // Use status from schema
+          lastContactDate: customer.lastContactDate // Use lastContactDate from schema
+            ? new Date(customer.lastContactDate).toLocaleDateString()
             : "Never",
           createdAt: customer.createdAt
             ? new Date(customer.createdAt).toLocaleDateString()
             : "N/A",
         }));
         setRecentCustomers(formatted);
-      })
-      .catch((err) => {
+      } catch (err) {
+        toast.error("Failed to load recent customers.");
         console.error("Failed to load recent customers", err);
-      });
+      } finally {
+        setLoadingCustomers(false);
+      }
+    };
 
     // Fetch email campaigns
-    fetch("https://your-crm-server.vercel.app/campaigns/recent", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const formatted = data.map((campaign) => ({
+    const fetchEmailCampaigns = async () => {
+      setLoadingCampaigns(true);
+      try {
+        // Assuming a /campaigns endpoint exists for recent campaigns or all campaigns
+        const res = await fetch(`${API_BASE}/campaigns`, {
+          // Adjust if you have a /campaigns/recent
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to load email campaigns");
+        }
+        const data = await res.json();
+        // Assuming backend returns an array of campaigns, sort and take recent if no /recent endpoint
+        const sortedRecentCampaigns = data
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt || b.sentAt) -
+              new Date(a.createdAt || a.sentAt)
+          )
+          .slice(0, 5);
+
+        const formatted = sortedRecentCampaigns.map((campaign) => ({
           id: campaign._id,
           name: campaign.name,
           subject: campaign.subject,
-          recipients: campaign.recipients?.length || 0,
+          recipients: campaign.recipients?.length || 0, // Assuming recipients is an array
           openRate: campaign.analytics?.openRate || 0,
           clickRate: campaign.analytics?.clickRate || 0,
           status: campaign.status || "Draft",
@@ -87,38 +131,71 @@ function Dashboard() {
             : "Not sent",
         }));
         setEmailCampaigns(formatted);
-      })
-      .catch((err) => {
+      } catch (err) {
+        toast.error("Failed to load email campaigns.");
         console.error("Failed to load email campaigns", err);
-=======
-    // Fetch recent invoices
-    fetch("https://air-invoice-server.vercel.app/invoice/recent")
-      .then((res) => res.json())
-      .then((data) => {
-        const formatted = data.map((inv) => ({
-          id: inv._id,
-          customer: inv.invoiceDetails?.passengerName || "N/A",
-          passport: inv.invoiceDetails?.passportNumber || "N/A",
-          nationality: inv.invoiceDetails?.nationality || "N/A",
-          amount: inv.priceDetails?.totalAmount
-            ? `$${inv.priceDetails.totalAmount}`
-            : "N/A",
-          date: inv.createdAt
-            ? new Date(inv.createdAt).toLocaleDateString()
-            : "N/A",
-          status: "Sent",
-        }));
-        setRecentInvoices(formatted);
-      })
-      .catch((err) => {
-        console.error("Failed to load recent invoices", err);
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
-      });
-  }, []);
+      } finally {
+        setLoadingCampaigns(false);
+      }
+    };
+
+    // Fetch dashboard statistics
+    const fetchDashboardStats = async () => {
+      setLoadingStats(true);
+      try {
+        const res = await fetch(`${API_BASE}/customers/stats`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to load dashboard statistics");
+        }
+        const data = await res.json();
+        setStats(data);
+      } catch (err) {
+        toast.error("Failed to load dashboard statistics.");
+        console.error("Failed to load dashboard statistics", err);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchRecentCustomers();
+    fetchEmailCampaigns();
+    fetchDashboardStats();
+  }, [navigate]); // navigate is stable, so no infinite loop
+
+  // Component for displaying statistics cards
+  const StatCard = ({ label, value, change, icon: Icon, color }) => {
+    const changeColorClass = change?.startsWith("+")
+      ? "text-green-600 dark:text-green-400"
+      : "text-red-600 dark:text-red-400";
+    const bgColorClass = `bg-${color}-100 dark:bg-${color}-900`;
+    const textColorClass = `text-${color}-600 dark:text-${color}-400`;
+
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className={`p-2 rounded-lg ${bgColorClass}`}>
+            <Icon className={`w-5 h-5 ${textColorClass}`} />
+          </div>
+          {change && (
+            <span className={`text-sm font-medium ${changeColorClass}`}>
+              {change}
+            </span>
+          )}
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</p>
+        <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+          {value}
+        </h3>
+      </div>
+    );
+  };
 
   return (
-    <div>
-<<<<<<< HEAD
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 sm:p-8 lg:p-10 font-inter">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
@@ -126,80 +203,48 @@ function Dashboard() {
         </h1>
         {user && (
           <div className="flex items-center space-x-3">
-=======
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-          Dashboard
-        </h1>
-        {user && (
-          <div className="flex items-center space-x-3 ">
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
             <span className="hidden md:block text-gray-700 font-medium dark:text-white">
               {user.name}
             </span>
             <img
-<<<<<<< HEAD
               src={
                 user.picture
                   ?.replace("=s96-c", "")
-                  ?.replace("http://", "https://") || "/default-avatar.png"
+                  ?.replace("http://", "https://") ||
+                "https://placehold.co/40x40/cccccc/ffffff?text=U" // Placeholder for default avatar
               }
-              alt={user.name}
+              alt={user.name || "User Avatar"}
               className="w-10 h-10 object-cover rounded-full border border-gray-300"
-=======
-              src={user.picture
-                .replace("=s96-c", "")
-                .replace("http://", "https://")}
-              alt={user.name}
-              className="w-10 h-10 object-cover rounded-full border border-gray-300 "
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
             />
           </div>
         )}
       </div>
-<<<<<<< HEAD
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <Link
-          to="/dashboard/addcustomer"
-          className="bg-blue-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          to="/dashboard/customers" // Link to main customer management page
+          className="bg-blue-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
           <div className="flex items-center">
-            <div className="bg-white bg-opacity-30 p-3 rounded-full">
+            <div className="bg-white bg-opacity-20 p-3 rounded-full">
               <UserPlus className="w-6 h-6" />
             </div>
             <div className="ml-4 text-left">
-              <h3 className="text-xl font-semibold">Add New Customer</h3>
+              <h3 className="text-xl font-semibold">Manage Customers</h3>
               <p className="text-sm text-white text-opacity-90">
-                Create and manage customer profiles
-=======
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        <Link
-          to={`/dashboard/upload`}
-          className='bg-blue-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow'
-        >
-          <div className="flex items-center">
-            <div className="bg-white bg-opacity-30 p-3 rounded-full">
-              <FileUpIcon className="w-6 h-6" />
-            </div>
-            <div className="ml-4 text-left">
-              <h3 className="text-xl font-semibold">Upload New Invoice</h3>
-              <p className="text-sm text-white text-opacity-90">
-                Create a new invoice from airline ticket
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
+                View, add, edit, and delete customer profiles
               </p>
             </div>
           </div>
         </Link>
-<<<<<<< HEAD
 
         <Link
-          to="/dashboard/campaigns/create"
-          className="bg-green-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          to="/dashboard/campaigns/create" // Assuming this route exists
+          className="bg-green-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
           <div className="flex items-center">
-            <div className="bg-white bg-opacity-30 p-3 rounded-full">
+            <div className="bg-white bg-opacity-20 p-3 rounded-full">
               <Mail className="w-6 h-6" />
             </div>
             <div className="ml-4 text-left">
@@ -212,40 +257,81 @@ function Dashboard() {
         </Link>
 
         <Link
-          to="/dashboard/analytics"
-          className="bg-purple-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          to="/dashboard/analytics" // Assuming this route exists
+          className="bg-purple-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
           <div className="flex items-center">
-            <div className="bg-white bg-opacity-30 p-3 rounded-full">
+            <div className="bg-white bg-opacity-20 p-3 rounded-full">
               <BarChart3 className="w-6 h-6" />
             </div>
             <div className="ml-4 text-left">
               <h3 className="text-xl font-semibold">View Analytics</h3>
               <p className="text-sm text-white text-opacity-90">
                 Track performance and insights
-=======
-        <Link
-          to={`/dashboard/templates`}
-          className='bg-purple-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow'
-        >
-          <div className="flex items-center">
-            <div className="bg-white bg-opacity-30 p-3 rounded-full">
-              <BoxIcon className="w-6 h-6" />
-            </div>
-            <div className="ml-4 text-left">
-              <h3 className="text-xl font-semibold">Manage Templates</h3>
-              <p className="text-sm text-white text-opacity-90">
-                Create a new invoice from airline ticket
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
               </p>
             </div>
           </div>
         </Link>
       </div>
-<<<<<<< HEAD
+
+      {/* Statistics Cards - Dynamically loaded from API */}
+      {loadingStats ? (
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <StatCard
+            label="Total Customers"
+            value={stats.totalCustomers?.toLocaleString() || "0"}
+            change={
+              stats.customerGrowthPercentage
+                ? `+${stats.customerGrowthPercentage}%`
+                : "N/A"
+            }
+            icon={Users}
+            color="blue"
+          />
+          <StatCard
+            label="Active Customers"
+            value={stats.activeCustomers?.toLocaleString() || "0"}
+            change={
+              stats.activeCustomerPercentage
+                ? `+${stats.activeCustomerPercentage}%`
+                : "N/A"
+            }
+            icon={UserPlus} // Using UserPlus for active customers
+            color="green"
+          />
+          <StatCard
+            label="Total Email Campaigns"
+            value={stats.totalEmailCampaigns?.toLocaleString() || "0"}
+            change={
+              stats.campaignGrowthPercentage
+                ? `+${stats.campaignGrowthPercentage}%`
+                : "N/A"
+            }
+            icon={Mail}
+            color="purple"
+          />
+          <StatCard
+            label="Avg. Open Rate"
+            value={`${stats.avgOpenRate?.toFixed(1) || "0.0"}%`}
+            change={
+              stats.openRateChange
+                ? `${
+                    stats.openRateChange > 0 ? "+" : ""
+                  }${stats.openRateChange.toFixed(1)}%`
+                : "N/A"
+            }
+            icon={TrendingUp}
+            color="orange"
+          />
+        </div>
+      )}
 
       {/* Recent Customers */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-700 dark:text-white">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-800 dark:text-white">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-800 dark:text-white">
             Recent Customers
@@ -256,134 +342,106 @@ function Dashboard() {
           >
             View All Customers
           </Link>
-=======
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-700 dark:text-white">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-            Recent Invoices
-          </h2>
-          <button className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
-            View All
-          </button>
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-600">
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Customer
-                </th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-<<<<<<< HEAD
-                  Company
-                </th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Last Contact
-=======
-                  Date
-                </th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Amount
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
-                </th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Status
-                </th>
-                <th className="py-3 px-4 text-right text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-<<<<<<< HEAD
-              {recentCustomers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="border-b border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  <td className="py-4 px-4">
-                    <div>
-                      <div className="text-sm font-medium text-gray-800 dark:text-white">
-                        {customer.name}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {customer.email}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
-                    {customer.company}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
-                    {customer.lastContact}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        customer.status === "Active"
-                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                          : customer.status === "Inactive"
-                          ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-                          : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                      }`}
-                    >
-                      {customer.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-right">
-                    <button className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2">
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 mr-2">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="text-green-600 hover:text-green-800 dark:text-green-500 dark:hover:text-green-400">
-                      <Send className="w-4 h-4" />
-=======
-              {recentInvoices.map((invoice) => (
-                <tr
-                  key={invoice.id}
-                  className="border-b border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  <td className="py-4 px-4 text-sm text-gray-800 dark:text-white">
-                    {invoice.customer}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
-                    {invoice.date}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-800 font-medium dark:text-white">
-                    {invoice.amount}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${invoice.status === "Sent"
-                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                        }`}
-                    >
-                      {invoice.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-right">
-                    <button className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-3">
-                      <FileTextIcon className="w-4 h-4" />
-                    </button>
-                    <button className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
-                      <SendIcon className="w-4 h-4" />
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
-                    </button>
-                  </td>
+        {loadingCustomers ? (
+          <div className="flex justify-center items-center h-24">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : recentCustomers.length === 0 ? (
+          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+            No recent customers found.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-gray-700">
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Customer
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Company
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Last Contact
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                {recentCustomers.map((customer) => (
+                  <tr
+                    key={customer.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <div>
+                        <div className="text-sm font-medium text-gray-800 dark:text-white">
+                          {customer.fullName}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                          {customer.email}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                      {customer.company}
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                      {customer.lastContactDate}
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${getStatusColor(
+                          customer.status
+                        )}`}
+                      >
+                        {customer.status}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap text-right">
+                      <Link
+                        to={`/dashboard/customers/${customer.id}`} // Link to view customer details
+                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2"
+                        title="View Customer"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        to={`/dashboard/customers/edit/${customer.id}`} // Link to edit customer
+                        className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 mr-2"
+                        title="Edit Customer"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Link>
+                      {/* You might consider a dedicated "Send Email" action here */}
+                      <button
+                        className="text-blue-600 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-400"
+                        title="Send Email"
+                        onClick={() =>
+                          toast.success(
+                            `Simulating email to ${customer.fullName}`
+                          )
+                        }
+                      >
+                        <Send className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-<<<<<<< HEAD
       {/* Recent Email Campaigns */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-700 dark:text-white">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-800 dark:text-white">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-800 dark:text-white">
             Recent Email Campaigns
@@ -395,190 +453,96 @@ function Dashboard() {
             View All Campaigns
           </Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-600">
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Campaign
-                </th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Recipients
-                </th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Open Rate
-                </th>
-                <th className="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Status
-                </th>
-                <th className="py-3 px-4 text-right text-sm font-medium text-gray-500 dark:text-gray-300">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {emailCampaigns.map((campaign) => (
-                <tr
-                  key={campaign.id}
-                  className="border-b border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  <td className="py-4 px-4">
-                    <div>
-                      <div className="text-sm font-medium text-gray-800 dark:text-white">
-                        {campaign.name}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {campaign.subject}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
-                    {campaign.recipients}
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-300">
-                    {campaign.openRate}%
-                  </td>
-                  <td className="py-4 px-4">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full ${
-                        campaign.status === "Sent"
-                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                          : campaign.status === "Draft"
-                          ? "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
-                          : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-                      }`}
-                    >
-                      {campaign.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-right">
-                    <button className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2">
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[
-          {
-            label: "Total Customers",
-            value: "1,247",
-            change: "+15%",
-            icon: Users,
-            color: "blue",
-          },
-          {
-            label: "Email Campaigns",
-            value: "38",
-            change: "+8%",
-            icon: Mail,
-            color: "green",
-          },
-          {
-            label: "Avg. Open Rate",
-            value: "24.5%",
-            change: "+3.2%",
-            icon: TrendingUp,
-            color: "purple",
-          },
-          {
-            label: "Active Customers",
-            value: "892",
-            change: "+12%",
-            icon: Users,
-            color: "orange",
-          },
-        ].map((stat, index) => {
-          const IconComponent = stat.icon;
-          return (
-            <div
-              key={index}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div
-                  className={`p-2 rounded-lg bg-${stat.color}-100 dark:bg-${stat.color}-900`}
-                >
-                  <IconComponent
-                    className={`w-5 h-5 text-${stat.color}-600 dark:text-${stat.color}-400`}
-                  />
-                </div>
-                <span
-                  className={`text-sm font-medium ${
-                    stat.change.startsWith("+")
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
-                  {stat.change}
-                </span>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                {stat.label}
-              </p>
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
-                {stat.value}
-              </h3>
-            </div>
-          );
-        })}
-=======
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          {
-            label: "Invoices This Month",
-            value: "24",
-            change: "+12%",
-          },
-          {
-            label: "Total Revenue",
-            value: "$12,450",
-            change: "+8%",
-          },
-          {
-            label: "Pending Invoices",
-            value: "3",
-            change: "-2",
-          },
-        ].map((stat, index) => (
-          <div
-            key={index}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
-          >
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-              {stat.label}
-            </p>
-            <div className="flex justify-between items-end">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
-                {stat.value}
-              </h3>
-              <span
-                className={`text-sm ${stat.change.startsWith("+")
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
-                  }`}
-              >
-                {stat.change}
-              </span>
-            </div>
+        {loadingCampaigns ? (
+          <div className="flex justify-center items-center h-24">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
-        ))}
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
+        ) : emailCampaigns.length === 0 ? (
+          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+            No recent email campaigns found.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-gray-700">
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Campaign
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Recipients
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Open Rate
+                  </th>
+                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                {emailCampaigns.map((campaign) => (
+                  <tr
+                    key={campaign.id}
+                    className="border-b border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <div>
+                        <div className="text-sm font-medium text-gray-800 dark:text-white">
+                          {campaign.name}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                          {campaign.subject}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                      {campaign.recipients}
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                      {campaign.openRate}%
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          campaign.status === "Sent"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                            : campaign.status === "Draft"
+                            ? "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                            : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                        }`}
+                      >
+                        {campaign.status}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap text-right">
+                      <Link
+                        to={`/dashboard/campaigns/${campaign.id}`} // Link to view campaign details
+                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2"
+                        title="View Campaign"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        to={`/dashboard/campaigns/edit/${campaign.id}`} // Link to edit campaign
+                        className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                        title="Edit Campaign"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of ae8c7ee (Update Dashboard.jsx)
 export default Dashboard;
