@@ -171,7 +171,10 @@ function AppWrapper() {
           <Route path="addcustomer" element={<AddCustomer />} />
           <Route path="crm" element={<Crm />} />
           <Route path="email-templates" element={<EmailTemplateList />} />
-          <Route path="email-form" element={<EmailTemplateForm />} />
+          <Route
+            path="email-templates/create"
+            element={<EmailTemplateForm />}
+          />
           <Route path="email-preview" element={<EmailTemplatePreview />} />
           <Route path="settings" element={<Settings />} />
         </Route>
