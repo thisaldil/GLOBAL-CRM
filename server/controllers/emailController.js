@@ -27,7 +27,7 @@ exports.sendBulkEmail = async (req, res) => {
       );
 
       await transporter.sendMail({
-        from: `"Your Company" <${process.env.EMAIL_USER}>`,
+        from: `"ABMSZ" <${process.env.EMAIL_USER}>`,
         to: customer.email,
         subject: template.subject,
         html: personalizedBody,
