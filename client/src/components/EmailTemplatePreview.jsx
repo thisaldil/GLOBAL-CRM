@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_BASE = "https://global-crm-1zi3.vercel.app";
+
 const EmailTemplatePreview = () => {
   const { id } = useParams();
   const [template, setTemplate] = useState(null);
