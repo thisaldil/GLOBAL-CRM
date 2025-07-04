@@ -23,7 +23,7 @@ const EmailTemplatePreview = () => {
       <h2 className="text-2xl font-bold mb-4">{template.name}</h2>
       <div
         className="prose max-w-none"
-        dangerouslySetInnerHTML={{ __html: template.content }}
+        dangerouslySetInnerHTML={{ __html: template.body }} // ✅ correct
       />
     </div>
   );
