@@ -56,7 +56,7 @@ function Dashboard() {
     const fetchRecentCustomers = async () => {
       setLoadingCustomers(true);
       try {
-        const res = await fetch(`${API_BASE}/customers`, {
+        const res = await fetch(`${API_BASE}/addcustomers`, {
           // Fetch all customers
           headers: {
             Authorization: `Bearer ${token}`,
