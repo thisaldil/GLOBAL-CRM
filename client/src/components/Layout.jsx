@@ -24,7 +24,11 @@ function Layout() {
     // { path: "/dashboard/upload", label: "New Invoice", icon: FileTextIcon },
     // { path: "/dashboard/templates", label: "Templates", icon: BoxIcon },
     // { path: "/dashboard/invoices", label: "All Invoices", icon: FilesIcon },
-    { path: "/dashboard/crm", label: "CRM", icon: Users },
+    {
+      path: "/dashboard/email-templates",
+      label: "EmailTemplateList",
+      icon: Users,
+    },
     { path: "/dashboard/settings", label: "Settings", icon: SettingsIcon },
   ];
 

@@ -211,7 +211,7 @@ function Dashboard() {
                 user.picture
                   ?.replace("=s96-c", "")
                   ?.replace("http://", "https://") ||
-                "https://placehold.co/40x40/cccccc/ffffff?text=U" // Placeholder for default avatar
+                "https://placehold.co/40x40/cccccc/ffffff?text=U"
               }
               alt={user.name || "User Avatar"}
               className="w-10 h-10 object-cover rounded-full border border-gray-300"

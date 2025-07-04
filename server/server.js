@@ -71,6 +71,7 @@ const templateRoutes = require("./routes/templateRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const ocrRoutes = require("./routes/ocrRoutes");
 const customerRoutes = require("./routes/customerRoutes");
+const emailTemplateRoutes = require("./routes/emailTemplateRoutes");
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
@@ -78,6 +79,7 @@ app.use("/template", templateRoutes);
 app.use("/invoice", invoiceRoutes);
 app.use("/ocr", ocrRoutes);
 app.use("/customers", customerRoutes);
+app.use("/email-templates", emailTemplateRoutes);
 
 // ✅ 7. Custom API Route: Cloudinary Signature Generation
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
