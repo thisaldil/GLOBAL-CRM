@@ -1,63 +1,48 @@
-// /api/cron/send-holiday-emails.js
-import dbConnect from "../../utils/dbConnect"; // your MongoDB connector
-import Customer from "../../models/customer";
-import EmailTemplate from "../../models/emailTemplate";
-import { sendEmail } from "../../utils/mailer"; // your sendEmail util
-import axios from "axios";
+const connectDB = require("../../database");
+const Customer = require("../../models/customer");
+const EmailTemplate = require("../../models/emailTemplate");
+const sendEmail = require("../../utils/sendEmail");
 
-export default async function handler(req, res) {
-  if (req.method !== "GET") return res.status(405).end("Method Not Allowed");
-
-  await dbConnect();
-
-  const today = new Date().toISOString().split("T")[0];
-
-  // 🌍 Check holidays from Calendarific API
-  const calendarKey = process.env.CALENDARIFIC_KEY;
+module.exports = async (req, res) => {
+  if (req.method && req.method !== "GET") {
+    return res.status(405).json({ message: "Method Not Allowed" });
+  }
 
   try {
-    const response = await axios.get(
-      `https://calendarific.com/api/v2/holidays`,
-      {
-        params: {
-          api_key: calendarKey,
-          country: "US", // or "LK" for Sri Lanka
-          year: new Date().getFullYear(),
-        },
-      }
-    );
+    await connectDB();
 
-    const holidays = response.data.response.holidays;
-    const todayHoliday = holidays.find((h) => h.date.iso === today);
-    if (!todayHoliday)
-      return res.status(200).json({ message: "No holiday today." });
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-    const template = await EmailTemplate.findOne({
-      category: "Holiday",
-      name: new RegExp(todayHoliday.name, "i"),
-    });
+    const holidayList = ["2025-12-25", "2025-01-01", "2025-04-14"]; // add more holidays
+    if (!holidayList.includes(today)) {
+      return res.status(200).json({ message: "Not a holiday today." });
+    }
 
-    if (!template)
-      return res.status(404).json({ message: "No matching template found." });
+    const template = await EmailTemplate.findOne({ category: "Holiday" });
+    if (!template) {
+      return res.status(404).json({ message: "No holiday template found" });
+    }
 
-    const customers = await Customer.find({ isSubscribed: true });
+    const customers = await Customer.find({ email: { $exists: true } });
 
     for (const customer of customers) {
-      const html = template.body.replace("[customer name]", customer.fullName);
+      const personalizedBody = template.body.replace(
+        /{{fullName}}/g,
+        customer.fullName || "Valued Customer"
+      );
 
       await sendEmail({
         to: customer.email,
         subject: template.subject,
-        html,
+        html: personalizedBody,
       });
     }
 
-    return res.status(200).json({
-      message: `🎉 Sent ${todayHoliday.name} emails to ${customers.length} customers.`,
+    res.status(200).json({
+      message: `Holiday emails sent to ${customers.length} customers`,
     });
   } catch (err) {
-    return res
-      .status(500)
-      .json({ error: "Failed to process holiday campaign", err });
+    console.error("Cron error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
-}
+};
