@@ -56,7 +56,7 @@ function Dashboard() {
     const fetchRecentCustomers = async () => {
       setLoadingCustomers(true);
       try {
-        const res = await fetch(`${API_BASE}/addcustomers`, {
+        const res = await fetch(`${API_BASE}/customers`, {
           // Fetch all customers
           headers: {
             Authorization: `Bearer ${token}`,
@@ -223,7 +223,7 @@ function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <Link
-          to="/dashboard/customers" // Link to main customer management page
+          to="/dashboard/addcustomers" // Link to main customer management page
           className="bg-blue-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
           <div className="flex items-center">
