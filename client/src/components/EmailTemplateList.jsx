@@ -21,6 +21,21 @@ const EmailTemplateList = () => {
     }
   };
 
+  const sendBulkEmail = async (templateId) => {
+    try {
+      const res = await fetch(`${API_BASE}/email/send-bulk`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ templateId }),
+      });
+      const data = await res.json();
+      alert(data.message);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send emails");
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this template?"))
       return;
@@ -103,6 +118,12 @@ const EmailTemplateList = () => {
                       title="Delete"
                     >
                       <Trash2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => sendBulkEmail(template._id)}
+                      className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700"
+                    >
+                      Send to All
                     </button>
                   </td>
                 </tr>
