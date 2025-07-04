@@ -90,41 +90,47 @@ const EmailTemplateList = () => {
               {templates.map((template) => (
                 <tr
                   key={template._id}
-                  className="border-t hover:bg-gray-50 transition"
+                  className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
                 >
-                  <td className="px-4 py-3">{template.name}</td>
-                  <td className="px-4 py-3">{template.category || "-"}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-sm text-gray-800 font-medium">
+                    {template.name}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {template.category || "-"}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-500">
                     {new Date(template.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3 text-right space-x-2">
-                    <Link
-                      to={`/dashboard/email-templates/view/${template._id}`}
-                      className="text-blue-600 hover:underline"
-                      title="Preview"
-                    >
-                      <Eye size={18} />
-                    </Link>
-                    <Link
-                      to={`/dashboard/email-templates/edit/${template._id}`}
-                      className="text-yellow-600 hover:underline"
-                      title="Edit"
-                    >
-                      <Pencil size={18} />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(template._id)}
-                      className="text-red-600 hover:underline"
-                      title="Delete"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                    <button
-                      onClick={() => sendBulkEmail(template._id)}
-                      className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700"
-                    >
-                      Send to All
-                    </button>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex justify-end items-center gap-2 flex-wrap">
+                      <Link
+                        to={`/dashboard/email-templates/view/${template._id}`}
+                        title="Preview"
+                        className="inline-flex items-center px-2 py-1 text-sm text-blue-600 hover:text-blue-800 transition"
+                      >
+                        <Eye size={18} />
+                      </Link>
+                      <Link
+                        to={`/dashboard/email-templates/edit/${template._id}`}
+                        title="Edit"
+                        className="inline-flex items-center px-2 py-1 text-sm text-yellow-600 hover:text-yellow-800 transition"
+                      >
+                        <Pencil size={18} />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(template._id)}
+                        title="Delete"
+                        className="inline-flex items-center px-2 py-1 text-sm text-red-600 hover:text-red-800 transition"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => sendBulkEmail(template._id)}
+                        className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition"
+                      >
+                        Send to All
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
