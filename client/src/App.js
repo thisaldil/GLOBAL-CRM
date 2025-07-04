@@ -175,6 +175,15 @@ function AppWrapper() {
             path="email-templates/create"
             element={<EmailTemplateForm />}
           />
+          <Route
+            path="email-templates/edit/:id"
+            element={<EmailTemplateForm />}
+          />
+          <Route
+            path="email-templates/view/:id"
+            element={<EmailTemplatePreview />}
+          />
+
           <Route path="email-preview" element={<EmailTemplatePreview />} />
           <Route path="settings" element={<Settings />} />
         </Route>

@@ -240,7 +240,7 @@ function Dashboard() {
         </Link>
 
         <Link
-          to="/dashboard/campaigns/create" // Assuming this route exists
+          to="/dashboard/email-templates/create" // Assuming this route exists
           className="bg-green-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
           <div className="flex items-center">
