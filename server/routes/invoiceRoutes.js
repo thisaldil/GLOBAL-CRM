@@ -1,8 +1,9 @@
-// const express = require("express");
+const express = require("express");
+const router = express.Router();
 // const multer = require("multer");
 // const path = require("path");
 // const fs = require("fs");
-// const router = express.Router();
+
 // const ensureLoggedIn = require("connect-ensure-login").ensureLoggedIn;
 // const invoiceController = require("../controllers/invoiceController");
 // const ticketController = require("../controllers/ticketController");
@@ -61,4 +62,4 @@
 // router.delete("/deleteInvoice/:invoiceId", invoiceController.deleteInvoice);
 // router.get("/recent", ensureLoggedIn(), invoiceController.getRecentInvoices);
 
-// module.exports = router;
+module.exports = router;
