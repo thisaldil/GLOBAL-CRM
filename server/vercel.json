@@ -13,10 +13,10 @@
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     }
   ],
-  "rewrites": [
+  "crons": [
     {
-      "source": "/api/cron/send-holiday-emails",
-      "destination": "/api/cron/send-holiday-emails.js"
+      "path": "/api/cron/send-holiday-emails",
+      "schedule": "0 5 * * *"
     }
   ]
 }
