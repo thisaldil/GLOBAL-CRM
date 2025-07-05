@@ -12,5 +12,11 @@
       "dest": "/server.js",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/cron/send-holiday-emails",
+      "destination": "/api/cron/send-holiday-emails.js"
+    }
   ]
 }
