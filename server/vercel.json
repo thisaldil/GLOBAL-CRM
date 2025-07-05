@@ -21,7 +21,7 @@
   "crons": [
     {
       "path": "/api/cron/send-holiday-emails",
-      "schedule": "0 5 * * *"
+      "schedule": "0 8 * * *"
     }
   ]
 }
