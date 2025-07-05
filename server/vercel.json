@@ -8,6 +8,11 @@
   ],
   "routes": [
     {
+      "src": "/api/cron/send-holiday-emails",
+      "dest": "/api/cron/send-holiday-emails.js",
+      "methods": ["GET"]
+    },
+    {
       "src": "/(.*)",
       "dest": "/server.js",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
