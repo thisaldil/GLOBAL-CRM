@@ -12,8 +12,8 @@ module.exports = async (req, res) => {
     await connectDB();
 
     const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    const holidayList = ["2025-12-25", "2025-01-01", "2025-04-14"];
 
-    const holidayList = ["2025-12-25", "2025-01-01", "2025-04-14"]; // add more holidays
     if (!holidayList.includes(today)) {
       return res.status(200).json({ message: "Not a holiday today." });
     }
