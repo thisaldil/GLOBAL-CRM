@@ -10,19 +10,13 @@ exports.sendBulkEmail = async (req, res) => {
     if (!template)
       return res.status(404).json({ message: "Template not found" });
 
-    const todayFormatted = new Date().toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
     const customers = await Customer.find({ email: { $exists: true } });
 
     for (const customer of customers) {
       const personalizedBody = template.body
-        .replace(/{{\s*fullName\s*}}/g, customer.fullName || "Valued Customer")
-        .replace(/{{\s*company\s*}}/g, customer.company || "Your Company")
-        .replace(/{{\s*date\s*}}/g, todayFormatted);
+        .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
+        .replace(/{{company}}/g, customer.company || "Your Company")
+        .replace(/{{date}}/g, todayFormatted);
 
       await sendEmail({
         to: customer.email,
