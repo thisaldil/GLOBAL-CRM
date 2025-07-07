@@ -117,10 +117,10 @@ app.get("/", (req, res) => {
 // ✅ 9. EXPORT THE EXPRESS APP FOR VERCEL
 module.exports = app;
 
-// ✅ 10. RUN LOCALLY (only if not running on Vercel)
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`✅ Server is running locally on http://localhost:${PORT}`);
-  });
-}
+// // ✅ 10. RUN LOCALLY (only if not running on Vercel)
+// if (process.env.NODE_ENV !== "production") {
+//   const PORT = process.env.PORT || 5000;
+//   app.listen(PORT, () => {
+//     console.log(`✅ Server is running locally on http://localhost:${PORT}`);
+//   });
+// }
