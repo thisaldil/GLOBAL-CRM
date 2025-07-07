@@ -13,10 +13,10 @@ exports.sendBulkEmail = async (req, res) => {
     const customers = await Customer.find({ email: { $exists: true } });
 
     for (const customer of customers) {
-      const personalizedBody = template.body.replace(
-        /{{fullName}}/g,
-        customer.fullName || "Valued Customer"
-      );
+      const personalizedBody = template.body
+        .replace(/{{\s*fullName\s*}}/g, customer.fullName || "Valued Customer")
+        .replace(/{{\s*company\s*}}/g, customer.company || "Your Company")
+        .replace(/{{\s*date\s*}}/g, todayFormatted);
 
       await sendEmail({
         to: customer.email,
