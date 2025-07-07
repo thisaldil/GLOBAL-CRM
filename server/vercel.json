@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "server/api/cron/send-holiday-emails.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "server.js",
       "use": "@vercel/node"
     }
