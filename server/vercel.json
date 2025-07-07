@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "/api/cron/send-holiday-emails",
-      "dest": "/api/cron/send-holiday-emails.js",
+      "dest": "/server/api/cron/send-holiday-emails.js",
       "methods": ["GET"]
     },
     {
