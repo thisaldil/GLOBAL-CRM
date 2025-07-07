@@ -36,10 +36,10 @@ module.exports = async (req, res) => {
     const customers = await Customer.find({ email: { $exists: true } });
 
     for (const customer of customers) {
-      const personalizedBody = template.body.replace(
-        /{{fullName}}/g,
-        customer.fullName || "Valued Customer"
-      );
+      const personalizedBody = template.body
+        .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
+        .replace(/{{companyName}}/g, customer.company || "Your Company")
+        .replace(/{{date}}/g, todayFormatted);
 
       await sendEmail({
         to: customer.email,
