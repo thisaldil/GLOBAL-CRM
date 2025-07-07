@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
     for (const customer of customers) {
       const personalizedBody = template.body
         .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
-        .replace(/{{companyName}}/g, customer.company || "Your Company")
+        .replace(/{{company}}/g, customer.company || "Your Company")
         .replace(/{{date}}/g, todayFormatted);
 
       await sendEmail({
