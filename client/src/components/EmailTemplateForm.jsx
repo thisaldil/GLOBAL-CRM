@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const API_BASE = "https://global-crm-1zi3.vercel.app";
 
@@ -104,13 +106,22 @@ const EmailTemplateForm = () => {
 
         <div>
           <label className="block text-sm font-medium mb-1">Body *</label>
-          <textarea
-            name="body"
+          <ReactQuill
+            theme="snow"
             value={formData.body}
-            onChange={handleChange}
-            required
-            rows={10}
-            className="w-full border px-3 py-2 rounded-md font-mono"
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, body: value }))
+            }
+            placeholder="Write your email content here… Use {{fullName}}, {{company}}, {{date}}"
+            className="bg-white rounded-md"
+            modules={{
+              toolbar: [
+                ["bold", "italic", "underline"],
+                [{ list: "bullet" }],
+                ["link"],
+                ["clean"],
+              ],
+            }}
           />
         </div>
 
