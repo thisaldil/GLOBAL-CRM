@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 
 const API_BASE = "https://global-crm-1zi3.vercel.app";
 
@@ -148,7 +146,7 @@ const EmailTemplateForm = () => {
           </div>
         </div>
       ) : (
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium mb-1">Name *</label>
             <input
@@ -191,22 +189,14 @@ const EmailTemplateForm = () => {
               ✨ Header and footer will be automatically added when sending
               emails
             </p>
-            <ReactQuill
-              theme="snow"
+            <textarea
+              name="body"
               value={formData.body}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, body: value }))
-              }
+              onChange={handleChange}
+              rows={10}
+              className="w-full border px-3 py-2 rounded-md"
               placeholder="Write your email content here… Use {{fullName}}, {{company}}, {{date}}, {{year}}"
-              className="bg-white rounded-md"
-              modules={{
-                toolbar: [
-                  ["bold", "italic", "underline"],
-                  [{ list: "bullet" }, { list: "ordered" }],
-                  ["link"],
-                  ["clean"],
-                ],
-              }}
+              required
             />
           </div>
 
@@ -216,16 +206,16 @@ const EmailTemplateForm = () => {
             </h3>
             <div className="grid grid-cols-2 gap-2 text-sm text-blue-700">
               <div>
-                <code>{{ fullName }}</code> - Customer's full name
+                <code>{"{{ fullName }}"}</code> - Customer's full name
               </div>
               <div>
-                <code>{{ company }}</code> - Customer's company
+                <code>{"{{ company }}"}</code> - Customer's company
               </div>
               <div>
-                <code>{{ date }}</code> - Current date
+                <code>{"{{ date }}"}</code> - Current date
               </div>
               <div>
-                <code>{{ year }}</code> - Current year
+                <code>{"{{ year }}"}</code> - Current year
               </div>
             </div>
           </div>
@@ -239,14 +229,14 @@ const EmailTemplateForm = () => {
               Cancel
             </button>
             <button
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
               {loading ? "Saving..." : isEditMode ? "Update" : "Create"}
             </button>
           </div>
-        </div>
+        </form>
       )}
     </div>
   );

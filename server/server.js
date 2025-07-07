@@ -112,4 +112,15 @@ app.get("/", (req, res) => {
 // This is the most critical step for Vercel deployment.
 // You no longer need to use `app.listen()` or `serverless-http`.
 // Vercel's `@vercel/node` runtime will handle the HTTP server for you.
+//
+
+// ✅ 9. EXPORT THE EXPRESS APP FOR VERCEL
 module.exports = app;
+
+// ✅ 10. RUN LOCALLY (only if not running on Vercel)
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`✅ Server is running locally on http://localhost:${PORT}`);
+  });
+}
