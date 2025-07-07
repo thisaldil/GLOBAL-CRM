@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/api/cron/send-holiday-emails.js",
+      "src": "api/cron/send-holiday-emails.js",
       "use": "@vercel/node"
     },
     {
@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/api/cron/send-holiday-emails",
-      "dest": "/server/api/cron/send-holiday-emails.js",
+      "dest": "/api/cron/send-holiday-emails.js",
       "methods": ["GET"]
     },
     {
