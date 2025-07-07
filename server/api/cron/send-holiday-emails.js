@@ -12,6 +12,11 @@ module.exports = async (req, res) => {
     await connectDB();
 
     const today = new Date().toISOString().split("T")[0];
+    const todayFormatted = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
     const holidayMap = {
       "2025-12-25": "Christmas",
