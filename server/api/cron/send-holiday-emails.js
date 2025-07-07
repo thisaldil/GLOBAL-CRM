@@ -2,7 +2,6 @@ const connectDB = require("../../database");
 const Customer = require("../../models/customer");
 const EmailTemplate = require("../../models/emailTemplate");
 const sendEmail = require("../../utils/sendEmail");
-const { processEmailTemplate } = require("../../utils/emailWrapper");
 
 module.exports = async (req, res) => {
   if (req.method && req.method !== "GET") {
@@ -14,6 +13,12 @@ module.exports = async (req, res) => {
 
     const now = new Date();
     const today = now.toISOString().split("T")[0];
+    const todayFormatted = now.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    const year = now.getFullYear();
 
     const holidayMap = {
       "2025-12-25": "Christmas",
@@ -35,11 +40,43 @@ module.exports = async (req, res) => {
         .json({ message: `No template found for ${category}` });
     }
 
+    const emailHeader = `
+      <div style="background:#e63946;padding:20px;color:white;text-align:center;">
+        <h1>{{company}}</h1>
+        <p>{{date}}</p>
+      </div>
+    `;
+
+    const emailFooter = `
+      <div style="background:#f1f1f1;padding:20px;text-align:center;font-size:12px;color:#777;">
+        &copy; {{year}} {{company}}. All rights reserved.
+      </div>
+    `;
+
     const customers = await Customer.find({ email: { $exists: true } });
 
     for (const customer of customers) {
-      // Process the template: wrap with header/footer and personalize
-      const personalizedHtml = processEmailTemplate(template.body, customer);
+      const fullHtml = `
+        <html>
+          <body style="font-family:sans-serif;background:#f4f4f4;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td align="center">
+                <table width="600" style="background:white;border-radius:8px;overflow:hidden;">
+                  <tr><td>${emailHeader}</td></tr>
+                  <tr><td style="padding:30px;">${template.body}</td></tr>
+                  <tr><td>${emailFooter}</td></tr>
+                </table>
+              </td></tr>
+            </table>
+          </body>
+        </html>
+      `;
+
+      const personalizedHtml = fullHtml
+        .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
+        .replace(/{{company}}/g, customer.company || "Your Company")
+        .replace(/{{date}}/g, todayFormatted)
+        .replace(/{{year}}/g, year);
 
       await sendEmail({
         to: customer.email,
