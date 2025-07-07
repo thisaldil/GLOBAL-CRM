@@ -11,16 +11,26 @@ module.exports = async (req, res) => {
   try {
     await connectDB();
 
-    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    const holidayList = ["2025-12-25", "2025-01-01", "2025-04-14"];
+    const today = new Date().toISOString().split("T")[0];
 
-    if (!holidayList.includes(today)) {
+    const holidayMap = {
+      "2025-12-25": "Christmas",
+      "2025-01-01": "NewYear",
+      "2025-04-14": "SinhalaTamilNewYear",
+      "2025-07-07": "CompanyHoliday",
+    };
+
+    const category = holidayMap[today];
+
+    if (!category) {
       return res.status(200).json({ message: "Not a holiday today." });
     }
 
-    const template = await EmailTemplate.findOne({ category: "Holiday" });
+    const template = await EmailTemplate.findOne({ category });
     if (!template) {
-      return res.status(404).json({ message: "No holiday template found" });
+      return res
+        .status(404)
+        .json({ message: `No template found for ${category}` });
     }
 
     const customers = await Customer.find({ email: { $exists: true } });
@@ -39,7 +49,7 @@ module.exports = async (req, res) => {
     }
 
     res.status(200).json({
-      message: `Holiday emails sent to ${customers.length} customers`,
+      message: `${category} emails sent to ${customers.length} customers`,
     });
   } catch (err) {
     console.error("Cron error:", err);
