@@ -24,6 +24,7 @@ function Dashboard() {
   const [loadingCustomers, setLoadingCustomers] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
   const [templates, setTemplates] = useState([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ function Dashboard() {
       } catch (error) {
         console.error("Error fetching recent templates:", error);
       } finally {
-        setLoading(false);
+        setLoadingTemplates(false);
       }
     };
 
@@ -303,98 +304,91 @@ function Dashboard() {
         </div>
       )}
 
-      {/* Recent Customers */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-800 dark:text-white">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-            Recent Customers
-          </h2>
+      {/* 🔹 Recent Customers */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6 dark:bg-gray-800 dark:text-white">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Recent Customers</h2>
           <Link
             to="/dashboard/customers"
-            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+            className="text-sm font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >
             View All Customers
           </Link>
         </div>
+
         {loadingCustomers ? (
-          <div className="flex justify-center items-center h-24">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div className="flex justify-center items-center h-20">
+            <div className="animate-spin h-6 w-6 border-2 border-blue-600 border-t-transparent rounded-full" />
           </div>
         ) : recentCustomers.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+          <p className="text-center text-gray-500 dark:text-gray-400 py-6">
             No recent customers found.
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead>
-                <tr className="bg-gray-50 dark:bg-gray-700">
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Customer
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Company
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Last Contact
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Status
                   </th>
-                  <th className="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {recentCustomers.map((customer) => (
                   <tr
                     key={customer.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-800 dark:text-white">
-                          {customer.fullName}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">
-                          {customer.email}
-                        </div>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <div className="font-medium text-gray-800 dark:text-white">
+                        {customer.fullName}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {customer.email}
                       </div>
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-3 py-2 text-gray-600 dark:text-gray-300">
                       {customer.company}
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-3 py-2 text-gray-600 dark:text-gray-300">
                       {customer.lastContactDate}
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap">
+                    <td className="px-3 py-2">
                       <span
-                        className={`px-2 py-1 text-xs rounded-full ${getStatusColor(
+                        className={`text-xs px-2 py-1 rounded-full ${getStatusColor(
                           customer.status
                         )}`}
                       >
                         {customer.status}
                       </span>
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap text-right">
+                    <td className="px-3 py-2 text-right flex items-center justify-end gap-2">
                       <Link
-                        to={`/dashboard/customers/${customer.id}`} // Link to view customer details
-                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2"
-                        title="View Customer"
+                        to={`/dashboard/customers/${customer.id}`}
+                        title="View"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-4 h-4 text-blue-500 hover:text-blue-700" />
                       </Link>
                       <Link
-                        to={`/dashboard/customers/edit/${customer.id}`} // Link to edit customer
-                        className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 mr-2"
-                        title="Edit Customer"
+                        to={`/dashboard/customers/edit/${customer.id}`}
+                        title="Edit"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-4 h-4 text-green-500 hover:text-green-700" />
                       </Link>
-                      {/* You might consider a dedicated "Send Email" action here */}
                       <button
-                        className="text-blue-600 hover:text-blue-800 dark:text-blue-500 dark:hover:text-blue-400"
                         title="Send Email"
                         onClick={() =>
                           toast.success(
@@ -402,7 +396,7 @@ function Dashboard() {
                           )
                         }
                       >
-                        <Send className="w-4 h-4" />
+                        <Send className="w-4 h-4 text-blue-600 hover:text-blue-800" />
                       </button>
                     </td>
                   </tr>
@@ -413,76 +407,72 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Recent Email Campaigns */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-800 dark:text-white">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-            Recent Email Templates
-          </h2>
+      {/* 🔹 Recent Email Templates */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6 dark:bg-gray-800 dark:text-white">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Recent Email Templates</h2>
           <Link
             to="/dashboard/templates"
-            className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+            className="text-sm font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >
             View All Templates
           </Link>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-24">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        {loadingTemplates ? (
+          <div className="flex justify-center items-center h-20">
+            <div className="animate-spin h-6 w-6 border-2 border-blue-600 border-t-transparent rounded-full" />
           </div>
         ) : templates.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+          <p className="text-center text-gray-500 dark:text-gray-400 py-6">
             No recent email templates found.
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead>
-                <tr className="bg-gray-50 dark:bg-gray-700">
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Name
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Subject
                   </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Category
                   </th>
-                  <th className="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {templates.map((template) => (
                   <tr
                     key={template._id}
-                    className="border-b border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
-                    <td className="py-4 px-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-white">
+                    <td className="px-3 py-2 font-medium text-gray-800 dark:text-white">
                       {template.name}
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-3 py-2 text-gray-600 dark:text-gray-300">
                       {template.subject}
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-3 py-2 text-gray-600 dark:text-gray-300">
                       {template.category || "—"}
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap text-right">
+                    <td className="px-3 py-2 text-right flex items-center justify-end gap-2">
                       <Link
                         to={`/dashboard/templates/${template._id}`}
-                        className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2"
-                        title="View Template"
+                        title="View"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-4 h-4 text-blue-500 hover:text-blue-700" />
                       </Link>
                       <Link
                         to={`/dashboard/templates/edit/${template._id}`}
-                        className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-                        title="Edit Template"
+                        title="Edit"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-4 h-4 text-green-500 hover:text-green-700" />
                       </Link>
                     </td>
                   </tr>
