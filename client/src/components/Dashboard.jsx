@@ -187,7 +187,7 @@ const useApiData = (endpoint, formatter = (data) => data) => {
 // Main Dashboard Component
 function Dashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState({});
+  const [stats, setStats] = useState({ total: 0, active: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
 
   // Fetch recent customers
