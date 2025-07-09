@@ -106,6 +106,19 @@ const bulkUpdateCustomers = async (req, res) => {
   }
 };
 
+// @desc    Get customer stats (total, active)
+// @route   GET /api/customers/stats
+const getCustomerStats = async (req, res) => {
+  try {
+    const total = await Customer.countDocuments();
+    const active = await Customer.countDocuments({ status: "Active" });
+
+    res.status(200).json({ total, active });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching customer stats", error });
+  }
+};
+
 // ✅ Export all controller functions
 module.exports = {
   createCustomer,
@@ -114,4 +127,5 @@ module.exports = {
   updateCustomer,
   deleteCustomer,
   bulkUpdateCustomers,
+  getCustomerStats,
 };

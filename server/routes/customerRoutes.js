@@ -20,4 +20,6 @@ router.delete("/:id", customerController.deleteCustomer);
 // Bulk update (e.g., status or tags)
 router.patch("/bulk-update", customerController.bulkUpdateCustomers);
 
+router.get("/stats", customerController.getCustomerStats);
+
 module.exports = router;
