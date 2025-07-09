@@ -127,7 +127,11 @@ function Dashboard() {
           throw new Error("Failed to load dashboard statistics");
         }
         const data = await res.json();
-        setStats(data);
+
+        setStats({
+          totalCustomers: data.total,
+          activeCustomers: data.active,
+        });
       } catch (err) {
         toast.error("Failed to load dashboard statistics.");
         console.error("Failed to load dashboard statistics", err);
