@@ -8,10 +8,11 @@ import {
   BarChart3,
   Eye,
   Edit,
-  Trash2, // Keeping Trash2 for consistency, though not used in dashboard table actions
+  Trash2,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast"; // Assuming react-hot-toast is installed
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const API_BASE = "https://global-crm-1zi3.vercel.app"; // Consistent API base URL
 
@@ -19,12 +20,30 @@ function Dashboard() {
   const [user, setUser] = useState(null);
   const [recentCustomers, setRecentCustomers] = useState([]);
   const [emailCampaigns, setEmailCampaigns] = useState([]);
-  const [stats, setStats] = useState({}); // State for dashboard statistics
+  const [stats, setStats] = useState({});
   const [loadingCustomers, setLoadingCustomers] = useState(true);
-  const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchRecentTemplates = async () => {
+      try {
+        const res = await axios.get(
+          "https://global-crm-1zi3.vercel.app/email-templates?limit=3"
+        );
+        setTemplates(res.data);
+      } catch (error) {
+        console.error("Error fetching recent templates:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentTemplates();
+  }, []);
 
   // Helper function for status colors (can be reused from CustomerManagementApp)
   const getStatusColor = (status) => {
@@ -94,51 +113,6 @@ function Dashboard() {
       }
     };
 
-    // Fetch email campaigns
-    const fetchEmailCampaigns = async () => {
-      setLoadingCampaigns(true);
-      try {
-        // Assuming a /campaigns endpoint exists for recent campaigns or all campaigns
-        const res = await fetch(`${API_BASE}/campaigns`, {
-          // Adjust if you have a /campaigns/recent
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) {
-          throw new Error("Failed to load email campaigns");
-        }
-        const data = await res.json();
-        // Assuming backend returns an array of campaigns, sort and take recent if no /recent endpoint
-        const sortedRecentCampaigns = data
-          .sort(
-            (a, b) =>
-              new Date(b.createdAt || b.sentAt) -
-              new Date(a.createdAt || a.sentAt)
-          )
-          .slice(0, 5);
-
-        const formatted = sortedRecentCampaigns.map((campaign) => ({
-          id: campaign._id,
-          name: campaign.name,
-          subject: campaign.subject,
-          recipients: campaign.recipients?.length || 0, // Assuming recipients is an array
-          openRate: campaign.analytics?.openRate || 0,
-          clickRate: campaign.analytics?.clickRate || 0,
-          status: campaign.status || "Draft",
-          sentAt: campaign.sentAt
-            ? new Date(campaign.sentAt).toLocaleDateString()
-            : "Not sent",
-        }));
-        setEmailCampaigns(formatted);
-      } catch (err) {
-        toast.error("Failed to load email campaigns.");
-        console.error("Failed to load email campaigns", err);
-      } finally {
-        setLoadingCampaigns(false);
-      }
-    };
-
     // Fetch dashboard statistics
     const fetchDashboardStats = async () => {
       setLoadingStats(true);
@@ -162,9 +136,8 @@ function Dashboard() {
     };
 
     fetchRecentCustomers();
-    fetchEmailCampaigns();
     fetchDashboardStats();
-  }, [navigate]); // navigate is stable, so no infinite loop
+  }, [navigate]);
 
   // Component for displaying statistics cards
   const StatCard = ({ label, value, change, icon: Icon, color }) => {
@@ -444,22 +417,23 @@ function Dashboard() {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8 dark:bg-gray-800 dark:text-white">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-            Recent Email Campaigns
+            Recent Email Templates
           </h2>
           <Link
-            to="/dashboard/campaigns"
+            to="/dashboard/templates"
             className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
           >
-            View All Campaigns
+            View All Templates
           </Link>
         </div>
-        {loadingCampaigns ? (
+
+        {loading ? (
           <div className="flex justify-center items-center h-24">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
-        ) : emailCampaigns.length === 0 ? (
+        ) : templates.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-            No recent email campaigns found.
+            No recent email templates found.
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -467,16 +441,13 @@ function Dashboard() {
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-700">
                   <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Campaign
+                    Name
                   </th>
                   <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Recipients
+                    Subject
                   </th>
                   <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Open Rate
-                  </th>
-                  <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Status
+                    Category
                   </th>
                   <th className="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Actions
@@ -484,52 +455,32 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                {emailCampaigns.map((campaign) => (
+                {templates.map((template) => (
                   <tr
-                    key={campaign.id}
+                    key={template._id}
                     className="border-b border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-800 dark:text-white">
-                          {campaign.name}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">
-                          {campaign.subject}
-                        </div>
-                      </div>
+                    <td className="py-4 px-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-white">
+                      {template.name}
                     </td>
                     <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                      {campaign.recipients}
+                      {template.subject}
                     </td>
                     <td className="py-4 px-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                      {campaign.openRate}%
-                    </td>
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          campaign.status === "Sent"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                            : campaign.status === "Draft"
-                            ? "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
-                            : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-                        }`}
-                      >
-                        {campaign.status}
-                      </span>
+                      {template.category || "—"}
                     </td>
                     <td className="py-4 px-4 whitespace-nowrap text-right">
                       <Link
-                        to={`/dashboard/campaigns/${campaign.id}`} // Link to view campaign details
+                        to={`/dashboard/templates/${template._id}`}
                         className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mr-2"
-                        title="View Campaign"
+                        title="View Template"
                       >
                         <Eye className="w-4 h-4" />
                       </Link>
                       <Link
-                        to={`/dashboard/campaigns/edit/${campaign.id}`} // Link to edit campaign
+                        to={`/dashboard/templates/edit/${template._id}`}
                         className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-                        title="Edit Campaign"
+                        title="Edit Template"
                       >
                         <Edit className="w-4 h-4" />
                       </Link>

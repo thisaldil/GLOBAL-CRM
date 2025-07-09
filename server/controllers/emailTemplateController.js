@@ -13,7 +13,10 @@ exports.createTemplate = async (req, res) => {
 
 exports.getAllTemplates = async (req, res) => {
   try {
-    const templates = await EmailTemplate.find().sort({ createdAt: -1 });
+    const limit = parseInt(req.query.limit) || 0; // 0 means no limit
+    const templates = await EmailTemplate.find()
+      .sort({ createdAt: -1 })
+      .limit(limit);
     res.status(200).json(templates);
   } catch (err) {
     res.status(500).json({ error: "Error fetching templates", err });
