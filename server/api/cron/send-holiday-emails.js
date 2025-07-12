@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
     const year = now.getFullYear();
 
     const holidayMap = {
-      "2025-12-12": "Christmas",
+      "2025-07-12": "Christmas",
       "2025-01-01": "NewYear",
       "2025-04-14": "SinhalaTamilNewYear",
       "2025-07-11": "CompanyHoliday",
