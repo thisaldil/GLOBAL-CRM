@@ -41,15 +41,15 @@ module.exports = async (req, res) => {
     }
 
     const emailHeader = `
-      <div style="background:#e63946;padding:20px;color:white;text-align:center;">
-        <h1>{{company}}</h1>
-        <p>{{date}}</p>
+      <div style="background:linear-gradient(135deg, #000000 0%, #1a1a1a 100%);padding:20px;color:#ffd700;text-align:center;border-bottom:3px solid #ffd700;">
+        <h1 style="margin:0;font-size:28px;font-weight:bold;text-shadow:0 2px 4px rgba(255,215,0,0.3);">{{company}}</h1>
+        <p style="margin:8px 0 0 0;font-size:14px;color:#f5f5f5;opacity:0.9;">{{date}}</p>
       </div>
     `;
 
     const emailFooter = `
-      <div style="background:#f1f1f1;padding:20px;text-align:center;font-size:12px;color:#777;">
-        &copy; {{year}} {{company}}. All rights reserved.
+      <div style="background:linear-gradient(135deg, #1a1a1a 0%, #000000 100%);padding:20px;text-align:center;font-size:12px;color:#cccccc;border-top:1px solid #333;">
+        <p style="margin:0;color:#ffd700;">&copy; {{year}} {{company}}. All rights reserved.</p>
       </div>
     `;
 
