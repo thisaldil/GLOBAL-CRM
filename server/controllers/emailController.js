@@ -32,7 +32,7 @@ exports.sendBulkEmail = async (req, res) => {
     }
 
     res.status(200).json({
-      message: `Emails sent to ${customers.length} customers`,
+      message: `${template.category} Emails sent to ${customers.length} customers`,
     });
   } catch (err) {
     console.error(err);

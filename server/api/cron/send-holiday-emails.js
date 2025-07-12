@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       "2025-12-25": "Christmas",
       "2025-01-01": "NewYear",
       "2025-04-14": "SinhalaTamilNewYear",
-      "2025-07-07": "CompanyHoliday",
+      "2025-07-12": "CompanyHoliday",
     };
 
     const category = holidayMap[today];
