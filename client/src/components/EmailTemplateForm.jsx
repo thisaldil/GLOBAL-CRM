@@ -26,6 +26,11 @@ const EmailTemplateForm = () => {
         .then((data) => setFormData(data))
         .catch(() => setError("Failed to load template"))
         .finally(() => setLoading(false));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        body: `<p>Dear {{fullName}},</p>`,
+      }));
     }
   }, [id]);
 
