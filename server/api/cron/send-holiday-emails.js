@@ -2,8 +2,6 @@ const connectDB = require("../../database");
 const Customer = require("../../models/customer");
 const EmailTemplate = require("../../models/emailTemplate");
 const sendEmail = require("../../utils/sendEmail");
-const themeKey = category.toLowerCase();
-const theme = holidayThemes[themeKey] || {};
 
 module.exports = async (req, res) => {
   if (req.method && req.method !== "GET") {
@@ -34,6 +32,8 @@ module.exports = async (req, res) => {
     if (!category) {
       return res.status(200).json({ message: "Not a holiday today." });
     }
+    const themeKey = category.toLowerCase();
+    const theme = holidayThemes[themeKey] || {};
 
     const template = await EmailTemplate.findOne({ category });
     if (!template) {
