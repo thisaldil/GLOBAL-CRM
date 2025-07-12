@@ -86,7 +86,7 @@ module.exports = async (req, res) => {
     }
 
     res.status(200).json({
-      message: `${category} emails sent to ${customers.length} customers`,
+      message: `${template.category} emails sent to ${customers.length} customers`,
     });
   } catch (err) {
     console.error("Cron error:", err);
