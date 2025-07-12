@@ -27,6 +27,40 @@ module.exports = async (req, res) => {
       "2025-07-11": "CompanyHoliday",
     };
 
+    // Optional: Holiday-specific color variants
+    const holidayThemes = {
+      christmas: {
+        background: "linear-gradient(135deg, #2c5530 0%, #1e3a21 100%)",
+        accent: "#d4af37",
+        emoji: "🎄✨",
+      },
+      valentine: {
+        background: "linear-gradient(135deg, #8b1538 0%, #5d0e26 100%)",
+        accent: "#ff69b4",
+        emoji: "💕🌹",
+      },
+      easter: {
+        background: "linear-gradient(135deg, #9b59b6 0%, #663399 100%)",
+        accent: "#f1c40f",
+        emoji: "🐰🥚",
+      },
+      halloween: {
+        background: "linear-gradient(135deg, #e67e22 0%, #d35400 100%)",
+        accent: "#2c3e50",
+        emoji: "🎃👻",
+      },
+      thanksgiving: {
+        background: "linear-gradient(135deg, #a0522d 0%, #8b4513 100%)",
+        accent: "#ffa500",
+        emoji: "🦃🍂",
+      },
+      newyear: {
+        background: "linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)",
+        accent: "#f39c12",
+        emoji: "🎊🥳",
+      },
+    };
+
     const category = holidayMap[today];
 
     if (!category) {
@@ -65,40 +99,6 @@ module.exports = async (req, res) => {
     <p style="margin:5px 0 0 0;color:#e8f5e8;opacity:0.8;position:relative;z-index:2;">Celebrating every season with you!</p>
   </div>
 `;
-
-    // Optional: Holiday-specific color variants
-    const holidayThemes = {
-      christmas: {
-        background: "linear-gradient(135deg, #2c5530 0%, #1e3a21 100%)",
-        accent: "#d4af37",
-        emoji: "🎄✨",
-      },
-      valentine: {
-        background: "linear-gradient(135deg, #8b1538 0%, #5d0e26 100%)",
-        accent: "#ff69b4",
-        emoji: "💕🌹",
-      },
-      easter: {
-        background: "linear-gradient(135deg, #9b59b6 0%, #663399 100%)",
-        accent: "#f1c40f",
-        emoji: "🐰🥚",
-      },
-      halloween: {
-        background: "linear-gradient(135deg, #e67e22 0%, #d35400 100%)",
-        accent: "#2c3e50",
-        emoji: "🎃👻",
-      },
-      thanksgiving: {
-        background: "linear-gradient(135deg, #a0522d 0%, #8b4513 100%)",
-        accent: "#ffa500",
-        emoji: "🦃🍂",
-      },
-      newyear: {
-        background: "linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)",
-        accent: "#f39c12",
-        emoji: "🎊🥳",
-      },
-    };
 
     const customers = await Customer.find({ email: { $exists: true } });
 
