@@ -32,32 +32,32 @@ module.exports = async (req, res) => {
       christmas: {
         background: "linear-gradient(135deg, #2c5530 0%, #1e3a21 100%)",
         accent: "#d4af37",
-        emoji: "🎄✨",
+        emoji: ["🎄,✨"],
       },
       valentine: {
         background: "linear-gradient(135deg, #8b1538 0%, #5d0e26 100%)",
         accent: "#ff69b4",
-        emoji: "💕🌹",
+        emoji: ["💕,🌹"],
       },
       easter: {
         background: "linear-gradient(135deg, #9b59b6 0%, #663399 100%)",
         accent: "#f1c40f",
-        emoji: "🐰🥚",
+        emoji: ["🐰🥚"],
       },
       halloween: {
         background: "linear-gradient(135deg, #e67e22 0%, #d35400 100%)",
         accent: "#2c3e50",
-        emoji: "🎃👻",
+        emoji: ["🎃👻"],
       },
       thanksgiving: {
         background: "linear-gradient(135deg, #a0522d 0%, #8b4513 100%)",
         accent: "#ffa500",
-        emoji: "🦃🍂",
+        emoji: ["🦃🍂"],
       },
       newyear: {
         background: "linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)",
         accent: "#f39c12",
-        emoji: "🎊🥳",
+        emoji: ["🎊🥳"],
       },
     };
 
@@ -109,20 +109,39 @@ module.exports = async (req, res) => {
       customers.map(async (customer) => {
         try {
           const fullHtml = `
-        <html>
-          <body style="font-family:sans-serif;background:#f4f4f4;">
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr><td align="center">
-                <table width="600" style="background:white;border-radius:8px;overflow:hidden;">
-                  <tr><td>${emailHeader}</td></tr>
-                  <tr><td style="padding:30px;">${template.body}</td></tr>
-                  <tr><td>${emailFooter}</td></tr>
-                </table>
-              </td></tr>
-            </table>
-          </body>
-        </html>
-      `;
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI', sans-serif;
+        background: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;">
+      <tr>
+        <td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" style="background:white;border-radius:8px;overflow:hidden;">
+            <tr>
+              <td>${emailHeader}</td>
+            </tr>
+            <tr>
+              <td style="padding:30px;">${template.body}</td>
+            </tr>
+            <tr>
+              <td>${emailFooter}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+`;
 
           const personalizedHtml = fullHtml
             .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
