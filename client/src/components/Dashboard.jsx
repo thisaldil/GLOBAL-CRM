@@ -234,7 +234,7 @@ function Dashboard() {
           </div>
         </Link>
 
-        <Link
+        {/* <Link
           to="/dashboard/analytics" // Assuming this route exists
           className="bg-purple-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
@@ -249,7 +249,7 @@ function Dashboard() {
               </p>
             </div>
           </div>
-        </Link>
+        </Link> */}
       </div>
 
       {/* Statistics Cards - Dynamically loaded from API */}
