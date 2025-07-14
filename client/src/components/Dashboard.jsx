@@ -22,9 +22,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchRecentTemplates = async () => {
       try {
-        const res = await axios.get(
-          "https://global-crm-1zi3.vercel.app/email-templates?limit=3"
-        );
+        const res = await axios.get(`${API_BASE}/email-templates?limit=3`);
         setTemplates(res.data);
       } catch (error) {
         console.error("Error fetching recent templates:", error);
@@ -34,6 +32,16 @@ function Dashboard() {
     };
 
     fetchRecentTemplates();
+  }, []);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const res = await fetch(`${API_BASE}/api/customers/stats`);
+      const data = await res.json();
+      console.log("Total:", data.total, "Active:", data.active);
+    };
+
+    fetchStats();
   }, []);
 
   // Helper function for status colors (can be reused from CustomerManagementApp)
