@@ -13,6 +13,7 @@ const EmailTemplateForm = () => {
     subject: "",
     body: "",
     category: "",
+    type: "custom",
   });
 
   const [loading, setLoading] = useState(false);
@@ -110,6 +111,22 @@ The {{company}} Team</p>`,
             placeholder="e.g., Newsletter, Promo, Onboarding"
             className="w-full border px-3 py-2 rounded-md"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Type *</label>
+          <select
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            required
+            className="w-full border px-3 py-2 rounded-md"
+          >
+            <option value="custom">Custom</option>
+            <option value="inbuild" disabled>
+              Inbuild (not editable)
+            </option>
+          </select>
         </div>
 
         <div>
