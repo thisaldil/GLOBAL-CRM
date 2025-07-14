@@ -37,7 +37,7 @@ function Dashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const res = await fetch(`${API_BASE}/api/customers/stats`);
+      const res = await fetch(`${API_BASE}/customers/stats`);
       const data = await res.json();
       console.log("Total:", data.total, "Active:", data.active);
     };
