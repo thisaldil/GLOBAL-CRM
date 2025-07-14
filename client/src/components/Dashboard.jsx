@@ -146,7 +146,10 @@ function Dashboard() {
   useEffect(() => {
     const loadCount = async () => {
       const count = await fetchEmailTemplateCount();
-      setTemplateCount(count);
+      setStats((prev) => ({
+        ...prev,
+        totalTemplateCount: count,
+      }));
     };
     loadCount();
   }, []);
