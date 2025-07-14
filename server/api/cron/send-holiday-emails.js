@@ -124,7 +124,10 @@ module.exports = async (req, res) => {
   </div>
 `;
 
-    const customers = await Customer.find({ email: { $exists: true } });
+    const customers = await Customer.find({
+      email: { $exists: true },
+      status: "Active",
+    });
 
     let successCount = 0;
     let failedEmails = [];
