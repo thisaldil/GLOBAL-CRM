@@ -16,7 +16,10 @@ exports.sendBulkEmail = async (req, res) => {
       day: "numeric",
     });
 
-    const customers = await Customer.find({ email: { $exists: true } });
+    const customers = await Customer.find({
+      email: { $exists: true },
+      status: "Active",
+    });
 
     for (const customer of customers) {
       const personalizedBody = template.body
