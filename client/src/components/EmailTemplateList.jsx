@@ -143,6 +143,13 @@ const EmailTemplateList = () => {
                         <Pencil size={18} />
                       </Link>
                       <button
+                        onClick={() => handleDelete(template._id)}
+                        title="Delete"
+                        className="inline-flex items-center px-2 py-1 text-sm text-red-600 hover:text-red-800 transition"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                      <button
                         onClick={() => {
                           if (template.type !== "inbuild")
                             sendBulkEmail(template._id);
