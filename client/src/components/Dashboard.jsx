@@ -313,7 +313,7 @@ function Dashboard() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Recent Customers</h2>
           <Link
-            to="/dashboard/customers"
+            to="/dashboard/addcustomer"
             className="text-sm font-medium text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >
             View All Customers
