@@ -123,9 +123,10 @@ The {{company}} Team</p>`,
             className="w-full border px-3 py-2 rounded-md"
           >
             <option value="custom">Custom</option>
-            <option value="inbuild" disabled>
+            <option value="inbuild">In-Build</option>
+            {/* <option value="inbuild" disabled>
               Inbuild (not editable)
-            </option>
+            </option> */}
           </select>
         </div>
 
