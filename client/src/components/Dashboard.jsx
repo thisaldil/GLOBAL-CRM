@@ -313,9 +313,9 @@ function Dashboard() {
                   <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Status
                   </th>
-                  <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
+                  {/* <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Actions
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -347,7 +347,7 @@ function Dashboard() {
                         {customer.status}
                       </span>
                     </td>
-                    <td className="px-3 py-2 text-right flex items-center justify-end gap-2">
+                    {/* <td className="px-3 py-2 text-right flex items-center justify-end gap-2">
                       <Link
                         to={`/dashboard/customers/${customer.id}`}
                         title="View"
@@ -370,7 +370,7 @@ function Dashboard() {
                       >
                         <Send className="w-4 h-4 text-blue-600 hover:text-blue-800" />
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -413,9 +413,9 @@ function Dashboard() {
                   <th className="px-3 py-2 text-left font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Category
                   </th>
-                  <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
+                  {/* <th className="px-3 py-2 text-right font-medium text-gray-600 dark:text-gray-300 uppercase text-xs">
                     Actions
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -433,7 +433,7 @@ function Dashboard() {
                     <td className="px-3 py-2 text-gray-600 dark:text-gray-300">
                       {template.category || "—"}
                     </td>
-                    <td className="px-3 py-2 text-right flex items-center justify-end gap-2">
+                    {/* <td className="px-3 py-2 text-right flex items-center justify-end gap-2">
                       <Link
                         to={`/dashboard/templates/${template._id}`}
                         title="View"
@@ -446,7 +446,7 @@ function Dashboard() {
                       >
                         <Edit className="w-4 h-4 text-green-500 hover:text-green-700" />
                       </Link>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
