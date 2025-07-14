@@ -5,6 +5,8 @@ const customerController = require("../controllers/customerController");
 // Create a new customer
 router.post("/", customerController.createCustomer);
 
+router.get("/stats", customerController.getCustomerStats);
+
 // Get all customers (with optional filters)
 router.get("/", customerController.getAllCustomers);
 
@@ -19,7 +21,5 @@ router.delete("/:id", customerController.deleteCustomer);
 
 // Bulk update (e.g., status or tags)
 router.patch("/bulk-update", customerController.bulkUpdateCustomers);
-
-router.get("/stats", customerController.getCustomerStats);
 
 module.exports = router;
