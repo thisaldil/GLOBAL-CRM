@@ -286,11 +286,6 @@ function Dashboard() {
           <StatCard
             label="Total Email Templates"
             value={stats.totalTemplateCount?.toLocaleString() || "0"}
-            change={
-              stats.templateGrowthPercentage
-                ? `+${stats.templateGrowthPercentage}%`
-                : "N/A"
-            }
             icon={Mail}
             color="indigo"
           />
