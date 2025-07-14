@@ -65,6 +65,29 @@ const EmailTemplateList = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={() => setActiveTab("custom")}
+          className={`px-4 py-2 rounded-md border ${
+            activeTab === "custom"
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700"
+          }`}
+        >
+          Custom Templates
+        </button>
+        <button
+          onClick={() => setActiveTab("inbuild")}
+          className={`px-4 py-2 rounded-md border ${
+            activeTab === "inbuild"
+              ? "bg-blue-600 text-white"
+              : "bg-white text-gray-700"
+          }`}
+        >
+          In-Build Templates
+        </button>
+      </div>
+
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold">Email Templates</h1>
         <Link
