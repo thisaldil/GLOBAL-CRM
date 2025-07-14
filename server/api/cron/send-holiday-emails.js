@@ -105,17 +105,15 @@ module.exports = async (req, res) => {
     const emailHeader = `
   <div style="background:${
     theme.background
-  };padding:25px;color:#ffffff;text-align:center;border-bottom:4px solid ${
+  };padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid ${
       theme.accent
     };position:relative;overflow:hidden;">
-    <div style="position:absolute;top:10px;right:15px;font-size:24px;opacity:0.7;">${
-      theme.emoji?.[0] || ""
-    }</div>
-    <div style="position:absolute;top:10px;left:15px;font-size:24px;opacity:0.7;">${
-      theme.emoji?.[1] || ""
-    }</div>
-    <h1 style="margin:0;font-size:32px;font-weight:bold;text-shadow:0 3px 6px rgba(0,0,0,0.3);color:#ffffff;position:relative;z-index:2;">{{company}}</h1>
-    <p style="margin:12px 0 0 0;font-size:16px;color:#e8f5e8;opacity:0.95;position:relative;z-index:2;">{{date}}</p>
+    <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span>${theme.emoji?.[0] || ""}</span>
+      <span>${theme.emoji?.[1] || ""}</span>
+    </div>
+    <h1 style="margin:0;font-size:24px;font-weight:bold;text-shadow:0 2px 4px rgba(0,0,0,0.2);z-index:2;">{{company}}</h1>
+    <p style="margin:4px 0 0;font-size:14px;color:#e8f5e8;opacity:0.95;">{{date}}</p>
   </div>
 `;
 
