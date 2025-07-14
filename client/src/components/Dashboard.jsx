@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Users,
-  Mail,
-  Send,
-  TrendingUp,
-  UserPlus,
-  BarChart3,
-  Eye,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { Users, Mail, Send, UserPlus, Eye, Edit, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -201,14 +191,14 @@ function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <Link
-          to="/dashboard/addcustomer" // Link to main customer management page
-          className="bg-blue-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+          to="/dashboard/addcustomer"
+          className="bg-blue-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
-          <div className="flex items-center">
-            <div className="bg-white bg-opacity-20 p-3 rounded-full">
+          <div className="flex items-start gap-x-4">
+            <div className="bg-white bg-opacity-20 p-3 rounded-full flex items-center justify-center">
               <UserPlus className="w-6 h-6" />
             </div>
-            <div className="ml-4 text-left">
+            <div>
               <h3 className="text-xl font-semibold">Manage Customers</h3>
               <p className="text-sm text-white text-opacity-90">
                 View, add, edit, and delete customer profiles
@@ -219,13 +209,13 @@ function Dashboard() {
 
         <Link
           to="/dashboard/email-templates/create"
-          className="bg-green-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+          className="bg-green-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-transform duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
-          <div className="flex items-center">
-            <div className="bg-white bg-opacity-20 p-3 rounded-full">
+          <div className="flex items-start gap-x-4">
+            <div className="bg-white bg-opacity-20 p-3 rounded-full flex items-center justify-center">
               <Mail className="w-6 h-6" />
             </div>
-            <div className="ml-4 text-left">
+            <div>
               <h3 className="text-xl font-semibold">Create Email Campaign</h3>
               <p className="text-sm text-white text-opacity-90">
                 Send targeted email campaigns
