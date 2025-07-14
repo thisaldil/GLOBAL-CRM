@@ -29,7 +29,12 @@ const EmailTemplateForm = () => {
     } else {
       setFormData((prev) => ({
         ...prev,
-        body: `<p>Dear {{fullName}},</p>`,
+        body: `<p>Dear {{fullName}},</p>
+
+<p>Change your text here.</p>
+
+<p>Warm regards,<br/>
+The {{company}} Team</p>`,
       }));
     }
   }, [id]);

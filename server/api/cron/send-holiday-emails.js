@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
     await connectDB();
 
     const now = new Date();
-    const today = now.toISOString().split("T")[0];
+    const monthDay = now.toISOString().slice(5, 10);
     const todayFormatted = now.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -21,47 +21,73 @@ module.exports = async (req, res) => {
     const year = now.getFullYear();
 
     const holidayMap = {
-      "2025-12-12": "Christmas",
-      "2025-01-01": "NewYear",
-      "2025-04-14": "SinhalaTamilNewYear",
-      "2025-07-12": "CompanyHoliday",
+      "01-01": "NewYear",
+      "02-04": "IndependenceDaySrilanka",
+      "02-14": "Valentine",
+      "04-14": "SinhalaTamilNewYear",
+      "05-01": "LaborDay",
+      "06-05": "WorldEnvironmentDay",
+      "10-31": "Halloween",
+      "11-11": "VeteransDay",
+      "12-25": "Christmas",
+      "12-31": "NewYearsEve",
     };
 
     // Optional: Holiday-specific color variants
     const holidayThemes = {
-      christmas: {
-        background: "linear-gradient(135deg, #2c5530 0%, #1e3a21 100%)",
-        accent: "#d4af37",
-        emoji: ["🎄,✨"],
+      newyear: {
+        background: "linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)",
+        accent: "#f39c12",
+        emoji: ["🎊", "🥳"],
+      },
+      independencedaysrilanka: {
+        background: "linear-gradient(135deg, #005b9a 0%, #f8c300 100%)",
+        accent: "#dc143c",
+        emoji: ["🇱🇰", "🎉"],
       },
       valentine: {
         background: "linear-gradient(135deg, #8b1538 0%, #5d0e26 100%)",
         accent: "#ff69b4",
-        emoji: ["💕,🌹"],
+        emoji: ["💕", "🌹"],
       },
-      easter: {
-        background: "linear-gradient(135deg, #9b59b6 0%, #663399 100%)",
-        accent: "#f1c40f",
-        emoji: ["🐰🥚"],
+      sinhalatamilnewyear: {
+        background: "linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)",
+        accent: "#ffa726",
+        emoji: ["🎉", "🌞"],
+      },
+      laborday: {
+        background: "linear-gradient(135deg, #3c3b3f 0%, #605c3c 100%)",
+        accent: "#ffd700",
+        emoji: ["🛠️", "💼"],
+      },
+      worldenvironmentday: {
+        background: "linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)",
+        accent: "#2e7d32",
+        emoji: ["🌍", "🌱"],
       },
       halloween: {
         background: "linear-gradient(135deg, #e67e22 0%, #d35400 100%)",
         accent: "#2c3e50",
-        emoji: ["🎃👻"],
+        emoji: ["🎃", "👻"],
       },
-      thanksgiving: {
-        background: "linear-gradient(135deg, #a0522d 0%, #8b4513 100%)",
-        accent: "#ffa500",
-        emoji: ["🦃🍂"],
+      veteransday: {
+        background: "linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)",
+        accent: "#ff6f61",
+        emoji: ["🎖️", "🇺🇸"],
       },
-      newyear: {
-        background: "linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)",
-        accent: "#f39c12",
-        emoji: ["🎊🥳"],
+      christmas: {
+        background: "linear-gradient(135deg, #2c5530 0%, #1e3a21 100%)",
+        accent: "#d4af37",
+        emoji: ["🎄", "✨"],
+      },
+      newyearseve: {
+        background: "linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)",
+        accent: "#e1b12c",
+        emoji: ["🎆", "🍾"],
       },
     };
 
-    const category = holidayMap[today];
+    const category = holidayMap[monthDay];
 
     if (!category) {
       return res.status(200).json({ message: "Not a holiday today." });
