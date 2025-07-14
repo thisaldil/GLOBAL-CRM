@@ -233,23 +233,6 @@ function Dashboard() {
             </div>
           </div>
         </Link>
-
-        {/* <Link
-          to="/dashboard/analytics" // Assuming this route exists
-          className="bg-purple-600 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-105"
-        >
-          <div className="flex items-center">
-            <div className="bg-white bg-opacity-20 p-3 rounded-full">
-              <BarChart3 className="w-6 h-6" />
-            </div>
-            <div className="ml-4 text-left">
-              <h3 className="text-xl font-semibold">View Analytics</h3>
-              <p className="text-sm text-white text-opacity-90">
-                Track performance and insights
-              </p>
-            </div>
-          </div>
-        </Link> */}
       </div>
 
       {/* Statistics Cards - Dynamically loaded from API */}
@@ -291,19 +274,6 @@ function Dashboard() {
             }
             icon={Mail}
             color="purple"
-          />
-          <StatCard
-            label="Avg. Open Rate"
-            value={`${stats.avgOpenRate?.toFixed(1) || "0.0"}%`}
-            change={
-              stats.openRateChange
-                ? `${
-                    stats.openRateChange > 0 ? "+" : ""
-                  }${stats.openRateChange.toFixed(1)}%`
-                : "N/A"
-            }
-            icon={TrendingUp}
-            color="orange"
           />
         </div>
       )}
