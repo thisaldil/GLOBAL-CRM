@@ -103,17 +103,20 @@ module.exports = async (req, res) => {
     }
 
     const emailHeader = `
-  <div style="background:${
-    theme.background
-  };padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid ${
-      theme.accent
-    };position:relative;overflow:hidden;">
-    <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <span>${theme.emoji?.[0] || ""}</span>
-      <span>${theme.emoji?.[1] || ""}</span>
+  <div style="background:linear-gradient(135deg, ${theme.background} 0%, ${theme.background}dd 100%);padding:30px 40px;color:#ffffff;text-align:center;border-bottom:1px solid ${theme.accent}40;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="${theme.accent}" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');opacity:0.3;"></div>
+    
+    <div style="position:relative;z-index:2;">
+      <div style="display:inline-block;width:50px;height:3px;background:${theme.accent};margin-bottom:20px;border-radius:2px;"></div>
+      
+      <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:0.5px;text-shadow:0 1px 2px rgba(0,0,0,0.1);line-height:1.2;">{{company}}</h1>
+      
+      <div style="margin:15px 0 0;padding:8px 16px;background:rgba(255,255,255,0.1);border-radius:20px;display:inline-block;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);">
+        <p style="margin:0;font-size:13px;color:#ffffff;opacity:0.9;font-weight:500;letter-spacing:0.3px;">{{date}}</p>
+      </div>
     </div>
-    <h1 style="margin:0;font-size:24px;font-weight:bold;text-shadow:0 2px 4px rgba(0,0,0,0.2);z-index:2;">{{company}}</h1>
-    <p style="margin:4px 0 0;font-size:14px;color:#e8f5e8;opacity:0.95;">{{date}}</p>
+    
+    <div style="position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle, ${theme.accent}20 0%, transparent 70%);opacity:0.6;pointer-events:none;"></div>
   </div>
 `;
 
