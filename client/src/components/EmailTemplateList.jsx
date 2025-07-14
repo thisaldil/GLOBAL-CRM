@@ -8,12 +8,14 @@ const EmailTemplateList = () => {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("custom");
 
   const fetchTemplates = async () => {
     try {
       const res = await fetch(`${API_BASE}/email-templates`);
       const data = await res.json();
-      setTemplates(data);
+      const filtered = data.filter((t) => t.type === activeTab);
+      setTemplates(filtered);
     } catch (err) {
       setError("Failed to load templates");
     } finally {
@@ -56,7 +58,7 @@ const EmailTemplateList = () => {
 
   useEffect(() => {
     fetchTemplates();
-  }, []);
+  }, [activeTab]);
 
   if (loading) return <div className="p-6">Loading templates...</div>;
   if (error) return <div className="p-6 text-red-500">{error}</div>;
