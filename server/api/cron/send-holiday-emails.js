@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       "01-01": "NewYear",
       "02-04": "IndependenceDaySrilanka",
       "02-14": "Valentine",
-      "07-14": "SinhalaTamilNewYear",
+      "04-14": "SinhalaTamilNewYear",
       "06-01": "LaborDay",
       "06-05": "WorldEnvironmentDay",
       "10-31": "Halloween",
@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
       },
       valentine: {
         background: "linear-gradient(135deg, #8b1538 0%, #5d0e26 100%)",
-        accent: "#ff69b4",
+        accent: "#ffffff",
         emoji: ["💕", "🌹"],
       },
       sinhalatamilnewyear: {
