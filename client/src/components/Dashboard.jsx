@@ -16,6 +16,7 @@ function Dashboard() {
   const [templates, setTemplates] = useState([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [templateCount, setTemplateCount] = useState(0);
 
   const navigate = useNavigate();
 
@@ -142,6 +143,26 @@ function Dashboard() {
     fetchDashboardStats();
   }, [navigate]);
 
+  useEffect(() => {
+    const loadCount = async () => {
+      const count = await fetchEmailTemplateCount();
+      setTemplateCount(count);
+    };
+    loadCount();
+  }, []);
+
+  const fetchEmailTemplateCount = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/email-templates/count`);
+      if (!res.ok) throw new Error("Failed to fetch count");
+      const data = await res.json();
+      return data.count;
+    } catch (err) {
+      console.error("Error fetching template count:", err);
+      return 0;
+    }
+  };
+
   // Component for displaying statistics cards
   const StatCard = ({ label, value, change, icon: Icon, color }) => {
     const changeColorClass = change?.startsWith("+")
@@ -263,15 +284,15 @@ function Dashboard() {
             color="green"
           />
           <StatCard
-            label="Total Email Campaigns"
-            value={stats.totalEmailCampaigns?.toLocaleString() || "0"}
+            label="Total Email Templates"
+            value={stats.totalTemplateCount?.toLocaleString() || "0"}
             change={
-              stats.campaignGrowthPercentage
-                ? `+${stats.campaignGrowthPercentage}%`
+              stats.templateGrowthPercentage
+                ? `+${stats.templateGrowthPercentage}%`
                 : "N/A"
             }
             icon={Mail}
-            color="purple"
+            color="indigo"
           />
         </div>
       )}

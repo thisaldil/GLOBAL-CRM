@@ -54,3 +54,11 @@ exports.deleteTemplate = async (req, res) => {
     res.status(500).json({ error: "Error deleting template", err });
   }
 };
+exports.getTemplateCount = async (req, res) => {
+  try {
+    const count = await EmailTemplate.countDocuments();
+    res.status(200).json({ count });
+  } catch (err) {
+    res.status(500).json({ error: "Error counting templates", err });
+  }
+};
