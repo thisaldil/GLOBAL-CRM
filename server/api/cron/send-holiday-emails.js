@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       "01-01": "NewYear",
       "02-04": "IndependenceDaySrilanka",
       "02-14": "Valentine",
-      "04-14": "SinhalaTamilNewYear",
+      "05-14": "SinhalaTamilNewYear",
       "06-01": "LaborDay",
       "06-05": "WorldEnvironmentDay",
       "10-31": "Halloween",
