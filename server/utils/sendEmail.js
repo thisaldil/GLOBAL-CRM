@@ -14,10 +14,11 @@ const transporter = nodemailer.createTransport({
  * @param {string} param0.to
  * @param {string} param0.subject
  * @param {string} param0.html
+ * @param {string} [param0.company] - Optional company name for "from"
  */
-const sendEmail = async ({ to, subject, html }) => {
+const sendEmail = async ({ to, subject, html, company = "ABMSZ" }) => {
   await transporter.sendMail({
-    from: `"ABMSZ" <${process.env.EMAIL_USER}>`,
+    from: `"${company}" <${process.env.EMAIL_USER}>`,
     to,
     subject,
     html,
