@@ -68,6 +68,7 @@ exports.sendBulkEmail = async (req, res) => {
         to: customer.email,
         subject: template.subject,
         html: fullHtml,
+        company: customer.company || "XXX",
       });
     }
 
