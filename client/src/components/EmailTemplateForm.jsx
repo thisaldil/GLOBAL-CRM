@@ -69,58 +69,66 @@ The {{company}} Team</p>`,
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">
+    <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md dark:shadow-lg">
+      <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
         {isEditMode ? "Edit" : "Create"} Email Template
       </h1>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && <p className="text-red-500 mb-4 dark:text-red-400">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-1">Name *</label>
+          <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            Name *
+          </label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Subject *</label>
+          <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            Subject *
+          </label>
           <input
             type="text"
             name="subject"
             value={formData.subject}
             onChange={handleChange}
             required
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Category</label>
+          <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            Category
+          </label>
           <input
             type="text"
             name="category"
             value={formData.category}
             onChange={handleChange}
             placeholder="e.g., Newsletter, Promo, Onboarding"
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Type *</label>
+          <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            Type *
+          </label>
           <select
             name="type"
             value={formData.type}
             onChange={handleChange}
             required
-            className="w-full border px-3 py-2 rounded-md"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           >
             <option value="custom">Custom</option>
             <option value="inbuild">In-Build</option>
@@ -131,14 +139,16 @@ The {{company}} Team</p>`,
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Body *</label>
+          <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            Body *
+          </label>
           <textarea
             name="body"
             value={formData.body}
             onChange={handleChange}
             required
             rows={10}
-            className="w-full border px-3 py-2 rounded-md font-mono"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-md font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
           />
         </div>
 
@@ -146,14 +156,14 @@ The {{company}} Team</p>`,
           <button
             type="button"
             onClick={() => navigate("/dashboard/email-templates")}
-            className="px-4 py-2 border rounded-md"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-60"
           >
             {loading ? "Saving..." : isEditMode ? "Update" : "Create"}
           </button>
