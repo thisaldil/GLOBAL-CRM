@@ -42,18 +42,18 @@ const CustomerManagementApp = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "Active":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "Inactive":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
       case "Unsubscribed": // From frontend - Backend uses "Inactive" for unsubs, "Lost" for explicit lost
       case "Lost":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
       case "Trial":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
       case "Bounced": // From frontend - Backend has bounceStatus boolean, consider how to map
-        return "bg-orange-100 text-orange-800";
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
     }
   };
 
@@ -61,13 +61,13 @@ const CustomerManagementApp = () => {
   const getValueColor = (value) => {
     switch (value) {
       case "High":
-        return "text-green-600";
+        return "text-green-600 dark:text-green-300";
       case "Medium":
-        return "text-orange-600";
+        return "text-orange-600 dark:text-orange-300";
       case "Low":
-        return "text-gray-500";
+        return "text-gray-500 dark:text-gray-400";
       default:
-        return "text-gray-500";
+        return "text-gray-500 dark:text-gray-400";
     }
   };
 
@@ -232,9 +232,9 @@ const CustomerManagementApp = () => {
   }, [customers, sortBy, sortOrder]); // Depend on 'customers' (which is now API-filtered), and sort parameters
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
@@ -242,10 +242,10 @@ const CustomerManagementApp = () => {
                 <Users className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   Customer Management
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   Manage your customer relationships
                 </p>
               </div>
@@ -253,12 +253,12 @@ const CustomerManagementApp = () => {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setShowBulkModal(true)}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <Upload className="h-4 w-4" />
                 <span>Import</span>
               </button>
-              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 <Download className="h-4 w-4" />
                 <span>Export</span>
               </button>
@@ -276,13 +276,13 @@ const CustomerManagementApp = () => {
 
       {/* Navigation Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div className="flex space-x-6 border-b border-gray-200">
+        <div className="flex space-x-6 border-b border-gray-200 dark:border-gray-700">
           <button
             onClick={() => setActiveTab("customers")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === "customers"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
             }`}
           >
             Customers
@@ -291,8 +291,8 @@ const CustomerManagementApp = () => {
             onClick={() => setActiveTab("analytics")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === "analytics"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
             }`}
           >
             Analytics
@@ -309,13 +309,13 @@ const CustomerManagementApp = () => {
                 title="Total Customers"
                 value={stats.totalCustomers || 0}
                 icon={Users}
-                color="text-blue-600"
+                color="text-blue-600 dark:text-blue-400"
               />
               <StatsCard
                 title="Active Customers"
                 value={stats.activeCustomers || 0}
                 icon={UserCheck}
-                color="text-green-600"
+                color="text-green-600 dark:text-green-400"
                 subtitle={
                   stats.totalCustomers > 0
                     ? `${Math.round(
@@ -332,78 +332,92 @@ const CustomerManagementApp = () => {
                 title="Avg Open Rate"
                 value={`${stats.avgOpenRate || 0}%`}
                 icon={Mail}
-                color="text-purple-600"
+                color="text-purple-600 dark:text-purple-400"
               />
               <StatsCard
                 title="Avg Click Rate"
                 value={`${stats.avgClickRate || 0}%`}
                 icon={TrendingUp}
-                color="text-orange-600"
+                color="text-orange-600 dark:text-orange-400"
               />
             </div>
 
             {/* Additional Stats */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Customer Status Distribution
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Active</span>
-                    <span className="text-sm font-medium text-green-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      Active
+                    </span>
+                    <span className="text-sm font-medium text-green-600 dark:text-green-400">
                       {stats.activeCustomers || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Inactive</span>
-                    <span className="text-sm font-medium text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      Inactive
+                    </span>
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
                       {stats.inactiveCustomers || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
                       Unsubscribed (Lost)
                     </span>
-                    <span className="text-sm font-medium text-red-600">
+                    <span className="text-sm font-medium text-red-600 dark:text-red-400">
                       {stats.unsubscribedCustomers || stats.lostCustomers || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Trial</span>
-                    <span className="text-sm font-medium text-yellow-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      Trial
+                    </span>
+                    <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
                       {stats.trialCustomers || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Bounced</span>
-                    <span className="text-sm font-medium text-orange-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      Bounced
+                    </span>
+                    <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
                       {stats.bouncedCustomers || 0}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Email Engagement
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Total Sent</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      Total Sent
+                    </span>
+                    <span className="text-sm font-medium dark:text-white">
                       {stats.totalEmailsSent || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Total Opened</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      Total Opened
+                    </span>
+                    <span className="text-sm font-medium dark:text-white">
                       {stats.totalEmailsOpened || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Total Clicked</span>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      Total Clicked
+                    </span>
+                    <span className="text-sm font-medium dark:text-white">
                       {stats.totalEmailsClicked || 0}
                     </span>
                   </div>
@@ -416,17 +430,17 @@ const CustomerManagementApp = () => {
         {activeTab === "customers" && (
           <div className="space-y-6">
             {/* Filters and Search */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4" />
                     <input
                       type="text"
                       placeholder="Search by name, email, or company..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="pl-10 pr-4 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                     />
                   </div>
                 </div>
@@ -434,7 +448,7 @@ const CustomerManagementApp = () => {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                   >
                     <option value="">All Status</option>
                     {/* Ensure these match backend schema `status` enum */}
@@ -446,7 +460,7 @@ const CustomerManagementApp = () => {
                   <select
                     value={tagFilter}
                     onChange={(e) => setTagFilter(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                   >
                     <option value="">All Tags</option>
                     {/* Dynamically populate common tags here if available from API, or hardcode common ones */}
@@ -461,7 +475,7 @@ const CustomerManagementApp = () => {
                       setSortBy(field);
                       setSortOrder(order);
                     }}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                   >
                     {/* 'createdAt' and 'fullName' are directly from schema */}
                     <option value="createdAt-desc">Newest First</option>
@@ -474,32 +488,32 @@ const CustomerManagementApp = () => {
             </div>
 
             {/* Customer Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Customer
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Contact
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Engagement
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Tags
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {loading ? (
                       <tr>
                         <td colSpan="6" className="px-6 py-12 text-center">
@@ -851,15 +865,17 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5 text-gray-700 dark:text-gray-200" />
           </button>
         </div>
         <div className="p-6">{children}</div>
@@ -869,17 +885,25 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 };
 
 const StatsCard = ({ title, value, icon: Icon, color, subtitle }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-sm font-medium text-gray-600">{title}</p>
-        <p className={`text-2xl font-bold ${color}`}>{value}</p>
-        {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
+        <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+          {title}
+        </p>
+        <p className={`${color}`}>{value}</p>
+        {subtitle && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {subtitle}
+          </p>
+        )}
       </div>
       <div
         className={`p-3 rounded-lg ${color
           .replace("text-", "bg-")
-          .replace("-600", "-100")}`}
+          .replace("-600", "-100")
+          .replace("dark:text-", "dark:bg-")
+          .replace("-400", "-900")}`}
       >
         <Icon className={`h-6 w-6 ${color}`} />
       </div>
