@@ -710,59 +710,82 @@ const CustomerManagementApp = () => {
         title="Customer Details"
       >
         {selectedCustomer ? (
-          <div className="space-y-4 text-sm text-gray-700">
+          <div className="space-y-4 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-lg p-4">
             <p>
-              <strong>Full Name:</strong> {selectedCustomer.fullName}
+              <strong className="text-gray-900 dark:text-white">
+                Full Name:
+              </strong>{" "}
+              {selectedCustomer.fullName}
             </p>
             <p>
-              <strong>Email:</strong> {selectedCustomer.email}
+              <strong className="text-gray-900 dark:text-white">Email:</strong>{" "}
+              {selectedCustomer.email}
             </p>
             <p>
-              <strong>Phone:</strong> {selectedCustomer.phone || "N/A"}
+              <strong className="text-gray-900 dark:text-white">Phone:</strong>{" "}
+              {selectedCustomer.phone || "N/A"}
             </p>
             <p>
-              <strong>Company:</strong> {selectedCustomer.company || "N/A"}
+              <strong className="text-gray-900 dark:text-white">
+                Company:
+              </strong>{" "}
+              {selectedCustomer.company || "N/A"}
             </p>
             <p>
-              <strong>Status:</strong> {selectedCustomer.status}
+              <strong className="text-gray-900 dark:text-white">Status:</strong>{" "}
+              {selectedCustomer.status}
             </p>
             {/* Displaying customFields directly */}
             <p>
-              <strong>Customer Value:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Customer Value:
+              </strong>{" "}
               {selectedCustomer.customFields?.customerValue || "N/A"}
             </p>
             <p>
-              <strong>Job Title:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Job Title:
+              </strong>{" "}
               {selectedCustomer.customFields?.jobTitle || "N/A"}
             </p>
             <p>
-              <strong>Location:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Location:
+              </strong>{" "}
               {selectedCustomer.customFields?.location || "N/A"}
             </p>
             <p>
-              <strong>Tags:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">Tags:</strong>{" "}
               {selectedCustomer.tags?.length > 0
                 ? selectedCustomer.tags.join(", ")
                 : "None"}
             </p>
             <p>
-              <strong>Notes:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">Notes:</strong>{" "}
               {selectedCustomer.customFields?.notes || "N/A"}
             </p>
             <p>
-              <strong>Join Date:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Join Date:
+              </strong>{" "}
               {new Date(selectedCustomer.joinDate).toLocaleDateString()}
             </p>
             <p>
-              <strong>Years With Company:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Years With Company:
+              </strong>{" "}
               {selectedCustomer.yearsWithCompany || 0}
             </p>
             <p>
-              <strong>Assigned Rep:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Assigned Rep:
+              </strong>{" "}
               {selectedCustomer.assignedRep || "N/A"}
             </p>
             <p>
-              <strong>Next Follow Up:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Next Follow Up:
+              </strong>{" "}
               {selectedCustomer.nextFollowUpDate
                 ? new Date(
                     selectedCustomer.nextFollowUpDate
@@ -770,21 +793,29 @@ const CustomerManagementApp = () => {
                 : "N/A"}
             </p>
             <p>
-              <strong>Email Subscription:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Email Subscription:
+              </strong>{" "}
               {selectedCustomer.isSubscribed ? "Subscribed" : "Unsubscribed"}
             </p>
             <p>
-              <strong>Email Topics:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Email Topics:
+              </strong>{" "}
               {selectedCustomer.emailTopics?.length > 0
                 ? selectedCustomer.emailTopics.join(", ")
                 : "None"}
             </p>
             <p>
-              <strong>Email Frequency:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Email Frequency:
+              </strong>{" "}
               {selectedCustomer.emailFrequency || "N/A"}
             </p>
             <p>
-              <strong>Last Email Opened:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Last Email Opened:
+              </strong>{" "}
               {selectedCustomer.lastEmailOpenedDate
                 ? new Date(
                     selectedCustomer.lastEmailOpenedDate
@@ -792,7 +823,9 @@ const CustomerManagementApp = () => {
                 : "N/A"}
             </p>
             <p>
-              <strong>Last Contact Date:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Last Contact Date:
+              </strong>{" "}
               {selectedCustomer.lastContactDate
                 ? new Date(
                     selectedCustomer.lastContactDate
@@ -800,24 +833,32 @@ const CustomerManagementApp = () => {
                 : "N/A"}
             </p>
             <p>
-              <strong>Bounce Status:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Bounce Status:
+              </strong>{" "}
               {selectedCustomer.bounceStatus ? "Bounced" : "No Bounce"}
             </p>
             <p>
-              <strong>Lead Source:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Lead Source:
+              </strong>{" "}
               {selectedCustomer.leadSource || "N/A"}
             </p>
             <p>
-              <strong>Customer Value Score:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Customer Value Score:
+              </strong>{" "}
               {selectedCustomer.customerValueScore || "N/A"}
             </p>
             <p>
-              <strong>Engagement Status:</strong>{" "}
+              <strong className="text-gray-900 dark:text-white">
+                Engagement Status:
+              </strong>{" "}
               {selectedCustomer.engagementStatus || "N/A"}
             </p>
           </div>
         ) : (
-          <p>Loading...</p>
+          <p className="text-gray-700 dark:text-gray-200">Loading...</p>
         )}
       </Modal>
 
