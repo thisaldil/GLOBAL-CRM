@@ -9,7 +9,6 @@ const EmailTemplateList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("custom");
-  const [focusedSubTab, setFocusedSubTab] = useState("high");
 
   const fetchTemplates = async () => {
     try {
@@ -98,42 +97,6 @@ const EmailTemplateList = () => {
           Focused Templates
         </button>
       </div>
-
-      {/* Sub-tabs under Focused */}
-      {activeTab === "focused" && (
-        <div className="flex gap-4 mb-6 ml-4">
-          <button
-            onClick={() => setFocusedSubTab("high")}
-            className={`px-3 py-1.5 rounded-md border text-sm transition-colors ${
-              focusedSubTab === "high"
-                ? "bg-blue-500 text-white dark:bg-blue-400"
-                : "bg-white text-gray-700 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600"
-            }`}
-          >
-            High Value
-          </button>
-          <button
-            onClick={() => setFocusedSubTab("mid")}
-            className={`px-3 py-1.5 rounded-md border text-sm transition-colors ${
-              focusedSubTab === "mid"
-                ? "bg-blue-500 text-white dark:bg-blue-400"
-                : "bg-white text-gray-700 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600"
-            }`}
-          >
-            Mid Value
-          </button>
-          <button
-            onClick={() => setFocusedSubTab("low")}
-            className={`px-3 py-1.5 rounded-md border text-sm transition-colors ${
-              focusedSubTab === "low"
-                ? "bg-blue-500 text-white dark:bg-blue-400"
-                : "bg-white text-gray-700 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600"
-            }`}
-          >
-            Low Value
-          </button>
-        </div>
-      )}
 
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold dark:text-gray-100">
