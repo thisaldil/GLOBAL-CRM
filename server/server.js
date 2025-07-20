@@ -59,6 +59,14 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(
+  cors({
+    origin: "https://readwellbooks.vercel.app", // or use: ["https://your-frontend-domain.com"]
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 // ✅ 5. Require and set up Passport and Mongoose Models
 // These files contain your Mongoose schema and Passport.js strategy logic.
 require("./models/User"); // Path to your User Mongoose model
