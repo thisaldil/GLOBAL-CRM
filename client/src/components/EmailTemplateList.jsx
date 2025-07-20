@@ -86,7 +86,7 @@ const EmailTemplateList = () => {
         >
           In-Build Templates
         </button>
-        <button
+        {/* <button
           onClick={() => setActiveTab("focused")}
           className={`px-4 py-2 rounded-md border transition-colors ${
             activeTab === "focused"
@@ -95,7 +95,7 @@ const EmailTemplateList = () => {
           }`}
         >
           Focused Templates
-        </button>
+        </button> */}
       </div>
 
       <div className="flex justify-between items-center mb-4">
