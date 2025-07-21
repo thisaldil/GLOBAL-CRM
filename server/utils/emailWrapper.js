@@ -6,7 +6,8 @@
  * @returns {string} HTML string for email header
  */
 const getEmailHeader = (variables = {}) => {
-  const { company = "XXX", date = new Date().toLocaleDateString() } = variables;
+  const { company = "Your Company", date = new Date().toLocaleDateString() } =
+    variables;
 
   return `
     <div style="background:#e63946;padding:20px;color:white;text-align:center;">
@@ -22,7 +23,8 @@ const getEmailHeader = (variables = {}) => {
  * @returns {string} HTML string for email footer
  */
 const getEmailFooter = (variables = {}) => {
-  const { company = "XXX", year = new Date().getFullYear() } = variables;
+  const { company = "Your Company", year = new Date().getFullYear() } =
+    variables;
 
   return `
     <div style="background:#f1f1f1;padding:20px;text-align:center;font-size:12px;color:#777;">
@@ -99,7 +101,7 @@ const personalizeEmail = (htmlContent, customer) => {
 
   return htmlContent
     .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
-    .replace(/{{company}}/g, customer.company || "XXX")
+    .replace(/{{company}}/g, customer.company || "Your Company")
     .replace(/{{date}}/g, today)
     .replace(/{{year}}/g, year);
 };
