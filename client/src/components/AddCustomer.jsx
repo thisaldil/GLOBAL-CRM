@@ -229,8 +229,8 @@ const CustomerManagementApp = () => {
                 </p>
               </div>
             </div>
-            {/* <div className="flex items-center space-x-3">
-              <button
+            <div className="flex items-center space-x-3">
+              {/* <button
                 onClick={() => setShowBulkModal(true)}
                 className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
@@ -240,7 +240,7 @@ const CustomerManagementApp = () => {
               <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 <Download className="h-4 w-4" />
                 <span>Export</span>
-              </button>
+              </button> */}
               <button
                 onClick={() => setShowAddModal(true)}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -248,7 +248,7 @@ const CustomerManagementApp = () => {
                 <Plus className="h-4 w-4" />
                 <span>Add Customer</span>
               </button>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
