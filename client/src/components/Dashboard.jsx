@@ -35,7 +35,7 @@ function Dashboard() {
 
         const [customersRes, statsRes, templateCountRes, templatesRes] =
           await Promise.all([
-            fetch(`${API_BASE}/customers?limit=4`, {
+            fetch(`${API_BASE}/customers`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
             fetch(`${API_BASE}/customers/stats`, {
