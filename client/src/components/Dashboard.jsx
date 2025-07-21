@@ -74,10 +74,10 @@ function Dashboard() {
         const templateCountData = await templateCountRes.json();
 
         setStats({
-          totalCustomers: statsData.total,
-          activeCustomers: statsData.active,
-          customerGrowthPercentage: statsData.customerGrowthPercentage,
-          activeCustomerPercentage: statsData.activeCustomerPercentage,
+          totalCustomers: statsData.totalCustomers,
+          activeCustomers: statsData.activeCustomers,
+          customerGrowthPercentage: statsData.customerGrowthPercentage, // You may want to update this if not present in backend
+          activeCustomerPercentage: statsData.activeCustomerPercentage, // You may want to update this if not present in backend
           totalTemplateCount: templateCountData.count,
         });
 
