@@ -31,12 +31,31 @@ const corsOptions = {
 };
 
 // Apply CORS middleware to all requests
-app.use(cors(corsOptions));
+const allowedOrigins = [
+  "https://readwellbooks.vercel.app", // ✅ Public site
+  "https://global-crm-1zi3.vercel.app", // ✅ Actual deployed backend
+  "https://global-crm.vercel.app", // ✅ If needed for frontend
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    exposedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // 🚨 FIX: Explicitly handle CORS preflight OPTIONS requests for all routes.
 // This is a crucial step for serverless platforms like Vercel to ensure the
 // preflight handshake succeeds before the actual request is sent.
-app.options("*", cors(corsOptions));
+app.options("*", cors()); // to support preflight requests
 
 // Body Parser Middleware to parse JSON request bodies
 app.use(express.json());
@@ -58,17 +77,6 @@ app.use(
 // These must be used after the session middleware (cookieSession).
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(
-  cors({
-    origin: [
-      "https://readwellbooks.vercel.app", // ✅ your marketing/public site
-      "https://global-crm.vercel.app", // ✅ your CRM frontend (optional)
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // only needed if using cookies or auth headers
-  })
-);
 
 // ✅ 5. Require and set up Passport and Mongoose Models
 // These files contain your Mongoose schema and Passport.js strategy logic.
