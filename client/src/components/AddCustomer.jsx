@@ -12,26 +12,23 @@ import {
   Edit3,
   Trash2,
   X,
-  ChevronUp, // Added for sort icon
-  ChevronDown, // Added for sort icon
 } from "lucide-react";
 import toast from "react-hot-toast";
-import CustomerForm from "./CustomerForm"; // Import the new CustomerForm component
+import CustomerForm from "./CustomerForm";
 
 const API_BASE = "https://global-crm-1zi3.vercel.app";
 
 const CustomerManagementApp = () => {
-  const [customers, setCustomers] = useState([]); // All customers from API
-  const [filteredCustomers, setFilteredCustomers] = useState([]); // Customers after client-side search/filter/sort
+  const [customers, setCustomers] = useState([]);
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1); // Not actively used for backend pagination yet, but good to keep.
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [tagFilter, setTagFilter] = useState(""); // New: for tag filtering
+  const [tagFilter, setTagFilter] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showBulkModal, setShowBulkModal] = useState(false); // For bulk import/export
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [activeTab, setActiveTab] = useState("customers");
@@ -45,12 +42,12 @@ const CustomerManagementApp = () => {
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "Inactive":
         return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
-      case "Unsubscribed": // From frontend - Backend uses "Inactive" for unsubs, "Lost" for explicit lost
+      case "Unsubscribed":
       case "Lost":
         return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
       case "Trial":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "Bounced": // From frontend - Backend has bounceStatus boolean, consider how to map
+      case "Bounced":
         return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
@@ -77,19 +74,14 @@ const CustomerManagementApp = () => {
       // Build query string for search, status, and tag filters
       const params = new URLSearchParams();
       if (searchTerm) params.append("search", searchTerm);
-      if (statusFilter) params.append("status", statusFilter); // Matches backend `status` filter
-      if (tagFilter) params.append("tag", tagFilter); // Matches backend `tag` filter
-
-      // Backend does not currently support sortBy/sortOrder on getAllCustomers.
-      // We will fetch all and sort client-side for now, but in a real scenario
-      // this would be added to the backend API: params.append("sortBy", sortBy); params.append("sortOrder", sortOrder);
+      if (statusFilter) params.append("status", statusFilter);
+      if (tagFilter) params.append("tag", tagFilter);
 
       const url = `${API_BASE}/customers?${params.toString()}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch customers");
       const data = await res.json();
-      setCustomers(data); // Store raw data
-      // Filter/sort logic will be in useEffect(searchTerm, statusFilter, customers, sortBy, sortOrder)
+      setCustomers(data);
     } catch (error) {
       toast.error(`Failed to fetch customers: ${error.message}`);
       console.error("Fetch customers error:", error);
@@ -122,8 +114,8 @@ const CustomerManagementApp = () => {
         throw new Error(errorData.message || "Failed to create customer");
       }
       toast.success("Customer created successfully!");
-      fetchCustomers(); // Refresh list after creation
-      fetchStats(); // Refresh stats
+      fetchCustomers();
+      fetchStats();
     } catch (error) {
       toast.error(error.message);
       console.error("Create customer error:", error);
@@ -142,8 +134,8 @@ const CustomerManagementApp = () => {
         throw new Error(errorData.message || "Failed to update customer");
       }
       toast.success("Customer updated successfully!");
-      fetchCustomers(); // Refresh list after update
-      fetchStats(); // Refresh stats
+      fetchCustomers();
+      fetchStats();
     } catch (error) {
       toast.error(error.message);
       console.error("Update customer error:", error);
@@ -165,36 +157,23 @@ const CustomerManagementApp = () => {
         throw new Error(errorData.message || "Failed to delete customer");
       }
       toast.success("Customer deleted successfully!");
-      fetchCustomers(); // Refresh list after deletion
-      fetchStats(); // Refresh stats
+      fetchCustomers();
+      fetchStats();
     } catch (error) {
       toast.error(error.message);
       console.error("Delete customer error:", error);
     }
   };
 
-  // Initial fetch on component mount and when filters/sort change
-  // Note: currentPage is not used in the current backend API, so removing from dependencies
   useEffect(() => {
     fetchCustomers();
     fetchStats();
-  }, [searchTerm, statusFilter, tagFilter]); // Removed sortBy/sortOrder from here, as they're client-side handled
+  }, [searchTerm, statusFilter, tagFilter]);
 
   // Client-side filtering and sorting logic
   useEffect(() => {
-    let currentFiltered = [...customers]; // Start with a copy of all customers
+    let currentFiltered = [...customers];
 
-    // Apply search filter (already done in fetchCustomers, but keeping here for consistency/future client-side-only filters)
-    // The backend now handles 'search', 'status', 'tag' directly, so this client-side filtering part
-    // becomes redundant if the backend filters perfectly. However, if the backend only does a partial
-    // search (e.g., only `fullName`) and you want more client-side, keep it.
-    // For now, let's assume backend `getAllCustomers` will return already filtered data.
-    // So, `customers` state will already be filtered by search, status, tag from the API call.
-
-    // If backend doesn't handle sorting, do it client-side here.
-    // The current backend `getAllCustomers` sorts by `createdAt: -1` by default.
-    // To support `name-asc`, `name-desc` from frontend, you'd need to extend backend.
-    // For demonstration, let's assume we sort client-side after fetch for now if the API doesn't support generic sorting.
     const sorted = currentFiltered.sort((a, b) => {
       let valA, valB;
 
@@ -211,7 +190,7 @@ const CustomerManagementApp = () => {
         valB = b[sortBy];
       }
 
-      if (valA === undefined || valA === null) valA = ""; // Handle undefined/null values
+      if (valA === undefined || valA === null) valA = "";
       if (valB === undefined || valB === null) valB = "";
 
       if (typeof valA === "string" && typeof valB === "string") {
@@ -229,7 +208,7 @@ const CustomerManagementApp = () => {
     });
 
     setFilteredCustomers(sorted);
-  }, [customers, sortBy, sortOrder]); // Depend on 'customers' (which is now API-filtered), and sort parameters
+  }, [customers, sortBy, sortOrder]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -324,10 +303,7 @@ const CustomerManagementApp = () => {
                     : "0% of total"
                 }
               />
-              {/* Note: Backend stats `avgOpenRate` and `avgClickRate` are not present in provided backend code.
-                  If these were present, they'd come from aggregated data. For now, showing 0 or placeholder.
-                  Also, `emailEngagement` in customer schema is not present. Backend needs to return these.
-              */}
+
               <StatsCard
                 title="Avg Open Rate"
                 value={`${stats.avgOpenRate || 0}%`}

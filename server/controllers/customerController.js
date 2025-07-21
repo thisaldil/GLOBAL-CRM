@@ -106,14 +106,56 @@ const bulkUpdateCustomers = async (req, res) => {
   }
 };
 
-// @desc    Get customer stats (total, active)
+// @desc    Get customer stats (total, active, inactive, trial, lost, unsubscribed, bounced, email engagement)
 // @route   GET /api/customers/stats
 const getCustomerStats = async (req, res) => {
   try {
-    const total = await Customer.countDocuments();
-    const active = await Customer.countDocuments({ status: "Active" });
+    // Customer status counts
+    const [total, active, inactive, trial, lost, unsubscribed, bounced] =
+      await Promise.all([
+        Customer.countDocuments(),
+        Customer.countDocuments({ status: "Active" }),
+        Customer.countDocuments({ status: "Inactive" }),
+        Customer.countDocuments({ status: "Trial" }),
+        Customer.countDocuments({ status: "Lost" }),
+        Customer.countDocuments({ engagementStatus: "Unsubscribed" }),
+        Customer.countDocuments({ bounceStatus: true }),
+      ]);
 
-    res.status(200).json({ total, active });
+    // Email engagement (basic estimation)
+    // For demo: count customers with lastEmailOpenedDate as 'opened', and engagementStatus 'Engaged' as 'clicked'
+    const totalEmailsSent = total; // Assume one email sent per customer for now
+    const totalEmailsOpened = await Customer.countDocuments({
+      lastEmailOpenedDate: { $exists: true, $ne: null },
+    });
+    const totalEmailsClicked = await Customer.countDocuments({
+      engagementStatus: "Engaged",
+    });
+
+    // Calculate rates
+    const avgOpenRate =
+      totalEmailsSent > 0
+        ? Math.round((totalEmailsOpened / totalEmailsSent) * 100)
+        : 0;
+    const avgClickRate =
+      totalEmailsSent > 0
+        ? Math.round((totalEmailsClicked / totalEmailsSent) * 100)
+        : 0;
+
+    res.status(200).json({
+      totalCustomers: total,
+      activeCustomers: active,
+      inactiveCustomers: inactive,
+      trialCustomers: trial,
+      lostCustomers: lost,
+      unsubscribedCustomers: unsubscribed,
+      bouncedCustomers: bounced,
+      totalEmailsSent,
+      totalEmailsOpened,
+      totalEmailsClicked,
+      avgOpenRate,
+      avgClickRate,
+    });
   } catch (error) {
     res.status(500).json({ message: "Error fetching customer stats", error });
   }
