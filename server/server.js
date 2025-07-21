@@ -63,7 +63,7 @@ app.use(
   cors({
     origin: [
       "https://readwellbooks.vercel.app", // ✅ your marketing/public site
-      "https://global-crm-1zi3.vercel.app", // ✅ your CRM frontend (optional)
+      "https://global-crm.vercel.app", // ✅ your CRM frontend (optional)
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // only needed if using cookies or auth headers
