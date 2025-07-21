@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Users, Mail, Send, UserPlus, Eye, Edit, Trash2 } from "lucide-react";
+import { Users, Mail, UserPlus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -9,49 +9,100 @@ const API_BASE = "https://global-crm-1zi3.vercel.app"; // Consistent API base UR
 function Dashboard() {
   const [user, setUser] = useState(null);
   const [recentCustomers, setRecentCustomers] = useState([]);
-  const [emailCampaigns, setEmailCampaigns] = useState([]);
   const [stats, setStats] = useState({});
+  const [templates, setTemplates] = useState([]);
   const [loadingCustomers, setLoadingCustomers] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
-  const [templates, setTemplates] = useState([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [templateCount, setTemplateCount] = useState(0);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchRecentTemplates = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(storedUser);
+
+    const fetchAllDashboardData = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/email-templates?limit=3`);
-        setTemplates(res.data);
-      } catch (error) {
-        console.error("Error fetching recent templates:", error);
+        setLoadingCustomers(true);
+        setLoadingStats(true);
+        setLoadingTemplates(true);
+
+        const [customersRes, statsRes, templateCountRes, templatesRes] =
+          await Promise.all([
+            fetch(`${API_BASE}/customers`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch(`${API_BASE}/customers/stats`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch(`${API_BASE}/email-templates/count`),
+            axios.get(`${API_BASE}/email-templates?limit=3`),
+          ]);
+
+        // 📦 Customers
+        if (!customersRes.ok) throw new Error("Failed to fetch customers");
+        const customersData = await customersRes.json();
+        const recent = customersData
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 5)
+          .map((customer) => ({
+            id: customer._id,
+            fullName: customer.fullName || "N/A",
+            email: customer.email || "N/A",
+            company: customer.company || "N/A",
+            phone: customer.phone || "N/A",
+            status: customer.status || "Active",
+            lastContactDate: customer.lastContactDate
+              ? new Date(customer.lastContactDate).toLocaleDateString()
+              : "Never",
+            createdAt: customer.createdAt
+              ? new Date(customer.createdAt).toLocaleDateString()
+              : "N/A",
+          }));
+        setRecentCustomers(recent);
+
+        // 📊 Stats
+        if (!statsRes.ok || !templateCountRes.ok)
+          throw new Error("Failed to fetch stats");
+        const statsData = await statsRes.json();
+        const templateCountData = await templateCountRes.json();
+
+        setStats({
+          totalCustomers: statsData.total,
+          activeCustomers: statsData.active,
+          customerGrowthPercentage: statsData.customerGrowthPercentage,
+          activeCustomerPercentage: statsData.activeCustomerPercentage,
+          totalTemplateCount: templateCountData.count,
+        });
+
+        // ✉️ Templates
+        setTemplates(templatesRes.data);
+      } catch (err) {
+        toast.error("Failed to load dashboard data.");
+        console.error("Dashboard fetch error:", err);
       } finally {
+        setLoadingCustomers(false);
+        setLoadingStats(false);
         setLoadingTemplates(false);
       }
     };
 
-    fetchRecentTemplates();
-  }, []);
+    fetchAllDashboardData();
+  }, [navigate]);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      const res = await fetch(`${API_BASE}/customers/stats`);
-      const data = await res.json();
-      console.log("Total:", data.total, "Active:", data.active);
-    };
-
-    fetchStats();
-  }, []);
-
-  // Helper function for status colors (can be reused from CustomerManagementApp)
+  // 🎨 Status badge helper
   const getStatusColor = (status) => {
     switch (status) {
       case "Active":
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "Inactive":
-      case "Lost": // Mapping "Lost" from backend schema to a red status
+      case "Lost":
         return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
       case "Trial":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
@@ -60,113 +111,7 @@ function Dashboard() {
     }
   };
 
-  // Fetch user data and authenticate
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login"); // Redirect to login if no token
-      return;
-    }
-
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    setUser(storedUser);
-
-    // Fetch recent customers
-    const fetchRecentCustomers = async () => {
-      setLoadingCustomers(true);
-      try {
-        const res = await fetch(`${API_BASE}/customers`, {
-          // Fetch all customers
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) {
-          throw new Error("Failed to load recent customers");
-        }
-        const data = await res.json();
-        // Sort by createdAt and take the first 5 for "recent"
-        const sortedRecent = data
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .slice(0, 5);
-
-        const formatted = sortedRecent.map((customer) => ({
-          id: customer._id,
-          fullName: customer.fullName || "N/A", // Use fullName from schema
-          email: customer.email || "N/A",
-          company: customer.company || "N/A",
-          phone: customer.phone || "N/A",
-          status: customer.status || "Active", // Use status from schema
-          lastContactDate: customer.lastContactDate // Use lastContactDate from schema
-            ? new Date(customer.lastContactDate).toLocaleDateString()
-            : "Never",
-          createdAt: customer.createdAt
-            ? new Date(customer.createdAt).toLocaleDateString()
-            : "N/A",
-        }));
-        setRecentCustomers(formatted);
-      } catch (err) {
-        toast.error("Failed to load recent customers.");
-        console.error("Failed to load recent customers", err);
-      } finally {
-        setLoadingCustomers(false);
-      }
-    };
-
-    // Fetch dashboard statistics
-    const fetchDashboardStats = async () => {
-      setLoadingStats(true);
-      try {
-        const res = await fetch(`${API_BASE}/customers/stats`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) {
-          throw new Error("Failed to load dashboard statistics");
-        }
-        const data = await res.json();
-
-        setStats({
-          totalCustomers: data.total,
-          activeCustomers: data.active,
-        });
-      } catch (err) {
-        toast.error("Failed to load dashboard statistics.");
-        console.error("Failed to load dashboard statistics", err);
-      } finally {
-        setLoadingStats(false);
-      }
-    };
-
-    fetchRecentCustomers();
-    fetchDashboardStats();
-  }, [navigate]);
-
-  useEffect(() => {
-    const loadCount = async () => {
-      const count = await fetchEmailTemplateCount();
-      setStats((prev) => ({
-        ...prev,
-        totalTemplateCount: count,
-      }));
-    };
-    loadCount();
-  }, []);
-
-  const fetchEmailTemplateCount = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/email-templates/count`);
-      if (!res.ok) throw new Error("Failed to fetch count");
-      const data = await res.json();
-      return data.count;
-    } catch (err) {
-      console.error("Error fetching template count:", err);
-      return 0;
-    }
-  };
-
-  // Component for displaying statistics cards
+  // 📊 Stat Card component
   const StatCard = ({ label, value, change, icon: Icon, color }) => {
     const changeColorClass = change?.startsWith("+")
       ? "text-green-600 dark:text-green-400"
