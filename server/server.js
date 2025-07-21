@@ -61,9 +61,12 @@ app.use(passport.session());
 
 app.use(
   cors({
-    origin: "https://readwellbooks.vercel.app", // or use: ["https://your-frontend-domain.com"]
+    origin: [
+      "https://readwellbooks.vercel.app", // ✅ your marketing/public site
+      "https://global-crm-1zi3.vercel.app", // ✅ your CRM frontend (optional)
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // only needed if using cookies or auth headers
   })
 );
 
