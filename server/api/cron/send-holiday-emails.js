@@ -1,5 +1,5 @@
 const connectDB = require("../../database");
-const company = require("../../models/company");
+const Company = require("../../models/company");
 const Customer = require("../../models/customer");
 const EmailTemplate = require("../../models/emailTemplate");
 const sendEmail = require("../../utils/sendEmail");
@@ -11,6 +11,8 @@ module.exports = async (req, res) => {
 
   try {
     await connectDB();
+
+    const company = await Company.findOne();
 
     const now = new Date();
     const monthDay = now.toISOString().slice(5, 10);
@@ -105,9 +107,7 @@ module.exports = async (req, res) => {
     }
 
     const emailHeader = `
-    <div style="background:#000000;padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid ${
-      theme.accent || "#ffffff"
-    };position:relative;overflow:hidden;">
+    <div style="background:#000000;padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid #ffffff;position:relative;overflow:hidden;">
       <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
         <span>${theme.emoji?.[0] || ""}</span>
         <span>${theme.emoji?.[1] || ""}</span>
@@ -118,12 +118,8 @@ module.exports = async (req, res) => {
   `;
 
     const emailFooter = `
-    <div style="background:#000000;padding:20px;text-align:center;font-size:12px;color:#ffffff;border-top:2px solid ${
-      theme.accent || "#ffffff"
-    };position:relative;">
-      <p style="margin:0;color:${
-        theme.accent || "#ffffff"
-      };font-weight:bold;position:relative;z-index:2;">&copy; {{year}} {{company}}. All rights reserved.</p>
+    <div style="background:#000000;padding:20px;text-align:center;font-size:12px;color:#ffffff;border-top:2px solid #ffffff;position:relative;">
+      <p style="margin:0;color:#ffffff;font-weight:bold;position:relative;z-index:2;">&copy; {{year}} {{company}}. All rights reserved.</p>
       <p style="margin:5px 0 0 0;color:#ffffff;opacity:0.8;position:relative;z-index:2;">Celebrating every season with you!</p>
     </div>
   `;
@@ -176,7 +172,7 @@ module.exports = async (req, res) => {
 
           const personalizedHtml = fullHtml
             .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
-            .replace(/{{company}}/g, company.company || "Your Company")
+            .replace(/{{company}}/g, company?.name || "Your Company")
             .replace(/{{date}}/g, todayFormatted)
             .replace(/{{year}}/g, year);
 
@@ -184,6 +180,7 @@ module.exports = async (req, res) => {
             to: customer.email,
             subject: template.subject,
             html: personalizedHtml,
+            company: company?.name,
           });
 
           successCount++;
