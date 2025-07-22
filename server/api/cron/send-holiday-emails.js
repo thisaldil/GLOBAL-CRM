@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
       "02-14": "Valentine",
       "04-14": "SinhalaTamilNewYear",
       "06-01": "LaborDay",
-      "06-05": "WorldEnvironmentDay",
+      "07-22": "WorldEnvironmentDay",
       "10-31": "Halloween",
       "11-11": "VeteransDay",
       "12-25": "Christmas",
