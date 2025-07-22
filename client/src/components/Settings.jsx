@@ -217,23 +217,17 @@ const Settings = () => {
                     >
                       <PencilLine className="w-4 h-4" /> Edit
                     </button>
-                    <button
-                      onClick={handleDeleteCompany}
-                      className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                    >
-                      <Trash2 className="w-4 h-4" /> Delete
-                    </button>
                   </>
                 )}
               </div>
             </div>
           ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            >
-              <PlusCircle className="w-4 h-4" /> Create Company
-            </button>
+            // <button
+            //   onClick={() => setIsEditing(true)}
+            //   className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            // >
+            //   <PlusCircle className="w-4 h-4" /> Create Company
+            // </button>
           )}
         </div>
 
