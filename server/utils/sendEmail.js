@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
  * @param {string} param0.html - Email HTML content
  * @param {string} [param0.company="XXX"] - Company name to show in sender
  */
-const sendEmail = async ({ to, subject, html, company = "XXX" }) => {
+const sendEmail = async ({ to, subject, html, company = "Your Company" }) => {
   await transporter.sendMail({
     from: `"${company}" <${process.env.EMAIL_USER}>`,
     to,

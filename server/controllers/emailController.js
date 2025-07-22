@@ -1,4 +1,5 @@
 const Customer = require("../models/customer");
+const Company = require("../models/company");
 const EmailTemplate = require("../models/emailTemplate");
 const sendEmail = require("../utils/sendEmail");
 
@@ -9,6 +10,9 @@ exports.sendBulkEmail = async (req, res) => {
     const template = await EmailTemplate.findById(templateId);
     if (!template)
       return res.status(404).json({ message: "Template not found" });
+
+    // Fetch the first active company (or fallback to null)
+    const company = await Company.findOne({ status: "active" });
 
     const todayFormatted = new Date().toLocaleDateString("en-US", {
       year: "numeric",
@@ -24,7 +28,10 @@ exports.sendBulkEmail = async (req, res) => {
     for (const customer of customers) {
       const personalizedBody = template.body
         .replace(/{{\s*fullName\s*}}/g, customer.fullName || "Valued Customer")
-        .replace(/{{\s*company\s*}}/g, customer.company || "Your Company")
+        .replace(
+          /{{\s*company\s*}}/g,
+          (company && company.name) || "Your Company"
+        )
         .replace(/{{\s*date\s*}}/g, todayFormatted);
 
       const year = new Date().getFullYear();
@@ -32,7 +39,7 @@ exports.sendBulkEmail = async (req, res) => {
       const defaultHeader = `
   <div style="background:#1a202c;padding:20px;text-align:center;color:#ffffff;">
     <h1 style="margin:0;font-size:26px;font-weight:bold;">${
-      customer.company || "Your Company"
+      customer.company || (company && company.name) || "Your Company"
     }</h1>
     <p style="margin:4px 0 0;font-size:14px;opacity:0.8;">${todayFormatted}</p>
   </div>`;
@@ -40,7 +47,7 @@ exports.sendBulkEmail = async (req, res) => {
       const defaultFooter = `
   <div style="background:#1a202c;padding:16px;text-align:center;color:#a0aec0;font-size:12px;">
     <p style="margin:0;">&copy; ${year} ${
-        customer.company || "Your Company"
+        (company && company.name) || "Your Company"
       }. All rights reserved.</p>
     <p style="margin:4px 0 0;">Thank you for being with us.</p>
   </div>`;
@@ -68,7 +75,7 @@ exports.sendBulkEmail = async (req, res) => {
         to: customer.email,
         subject: template.subject,
         html: fullHtml,
-        company: customer.company || "XXX",
+        company: (company && company.name) || "Your Company",
       });
     }
 
