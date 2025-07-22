@@ -107,7 +107,7 @@ module.exports = async (req, res) => {
     const emailHeader = `
   <div style="background:${
     theme.background
-  };padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid ${
+  };padding:15px 25px;color:#000000;text-align:center;border-bottom:4px solid ${
       theme.accent
     };position:relative;overflow:hidden;">
     <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
