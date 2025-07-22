@@ -34,7 +34,13 @@ module.exports = async (req, res) => {
       "11-11": "VeteransDay",
       "12-25": "Christmas",
       "12-31": "NewYearsEve",
-      "07-22": "CustomerAnniversary",
+    };
+
+    const isCustomerAnniversary = (customer) => {
+      if (!customer.joinDate) return false;
+      const joinDate = new Date(customer.joinDate);
+      const joinMonthDay = joinDate.toISOString().slice(5, 10);
+      return joinMonthDay === monthDay;
     };
 
     // Optional: Holiday-specific color variants
@@ -129,11 +135,17 @@ module.exports = async (req, res) => {
       status: "Active",
     });
 
+    const anniversaryCustomers = customers.filter(isCustomerAnniversary);
+
+    if (anniversaryCustomers.length === 0) {
+      return res.status(200).json({ message: "No anniversaries today." });
+    }
+
     let successCount = 0;
     let failedEmails = [];
 
     await Promise.all(
-      customers.map(async (customer) => {
+      anniversaryCustomers.map(async (customer) => {
         try {
           const fullHtml = `
 <html>
