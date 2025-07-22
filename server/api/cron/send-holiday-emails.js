@@ -107,18 +107,30 @@ module.exports = async (req, res) => {
           failed = [];
 
         const emailHeader = `
-          <div style="background:#000000;padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid #ffffff;">
+          <div style="background:${
+            theme.background || "#000000"
+          };padding:15px 25px;color:${
+          theme.accent || "#ffffff"
+        };text-align:center;border-bottom:4px solid ${
+          theme.accent || "#ffffff"
+        };">
             <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;">
               <span>${theme.emoji?.[0] || ""}</span>
               <span>${theme.emoji?.[1] || ""}</span>
             </div>
             <h1>{{company}}</h1>
-            <p style="font-size:14px;color:#ffffff;opacity:0.95;">${todayFormatted}</p>
+            <p style="font-size:14px;color:${
+              theme.accent || "#ffffff"
+            };opacity:0.95;">${todayFormatted}</p>
           </div>
         `;
 
         const emailFooter = `
-          <div style="background:#000000;padding:20px;text-align:center;font-size:12px;color:#ffffff;border-top:2px solid #ffffff;">
+          <div style="background:${
+            theme.background || "#000000"
+          };padding:20px;text-align:center;font-size:12px;color:${
+          theme.accent || "#ffffff"
+        };border-top:2px solid ${theme.accent || "#ffffff"};">
             <p style="font-weight:bold;">&copy; ${year} {{company}}. All rights reserved.</p>
             <p style="opacity:0.8;">Celebrating every season with you!</p>
           </div>
