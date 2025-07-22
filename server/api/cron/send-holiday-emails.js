@@ -5,15 +5,13 @@ const EmailTemplate = require("../../models/emailTemplate");
 const sendEmail = require("../../utils/sendEmail");
 
 module.exports = async (req, res) => {
-  if (req.method && req.method !== "GET") {
+  if (req.method !== "GET") {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
   try {
     await connectDB();
-
     const company = await Company.findOne();
-
     const now = new Date();
     const monthDay = now.toISOString().slice(5, 10);
     const todayFormatted = now.toLocaleDateString("en-US", {
@@ -36,14 +34,6 @@ module.exports = async (req, res) => {
       "12-31": "NewYearsEve",
     };
 
-    const isCustomerAnniversary = (customer) => {
-      if (!customer.joinDate) return false;
-      const joinDate = new Date(customer.joinDate);
-      const joinMonthDay = joinDate.toISOString().slice(5, 10);
-      return joinMonthDay === monthDay;
-    };
-
-    // Optional: Holiday-specific color variants
     const holidayThemes = {
       newyear: {
         background: "linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)",
@@ -57,12 +47,12 @@ module.exports = async (req, res) => {
       },
       valentine: {
         background: "linear-gradient(135deg, #8b1538 0%, #5d0e26 100%)",
-        accent: "#ffffff",
+        accent: "#fff",
         emoji: ["💕", "🌹"],
       },
       sinhalatamilnewyear: {
         background: "linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)",
-        accent: "#ffffff",
+        accent: "#fff",
         emoji: ["🎉", "🌞"],
       },
       laborday: {
@@ -97,117 +87,142 @@ module.exports = async (req, res) => {
       },
     };
 
-    const category = holidayMap[monthDay];
-
-    if (!category) {
-      return res.status(200).json({ message: "Not a holiday today." });
-    }
-    const themeKey = category.toLowerCase();
-    const theme = holidayThemes[themeKey] || {};
-
-    const template = await EmailTemplate.findOne({ category });
-    if (!template) {
-      return res
-        .status(404)
-        .json({ message: `No template found for ${category}` });
-    }
-
-    const emailHeader = `
-    <div style="background:#000000;padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid #ffffff;position:relative;overflow:hidden;">
-      <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span>${theme.emoji?.[0] || ""}</span>
-        <span>${theme.emoji?.[1] || ""}</span>
-      </div>
-      <h1 style="margin:0;font-size:24px;font-weight:bold;text-shadow:0 2px 4px rgba(0,0,0,0.2);z-index:2;">{{company}}</h1>
-      <p style="margin:4px 0 0;font-size:14px;color:#ffffff;opacity:0.95;">{{date}}</p>
-    </div>
-  `;
-
-    const emailFooter = `
-    <div style="background:#000000;padding:20px;text-align:center;font-size:12px;color:#ffffff;border-top:2px solid #ffffff;position:relative;">
-      <p style="margin:0;color:#ffffff;font-weight:bold;position:relative;z-index:2;">&copy; {{year}} {{company}}. All rights reserved.</p>
-      <p style="margin:5px 0 0 0;color:#ffffff;opacity:0.8;position:relative;z-index:2;">Celebrating every season with you!</p>
-    </div>
-  `;
-
     const customers = await Customer.find({
       email: { $exists: true },
       status: "Active",
     });
+    const monthDayMatch = (date) =>
+      new Date(date).toISOString().slice(5, 10) === monthDay;
 
-    const anniversaryCustomers = customers.filter(isCustomerAnniversary);
+    let results = [];
 
-    if (anniversaryCustomers.length === 0) {
-      return res.status(200).json({ message: "No anniversaries today." });
+    // --- Handle Holiday Emails ---
+    if (holidayMap[monthDay]) {
+      const category = holidayMap[monthDay];
+      const theme = holidayThemes[category.toLowerCase()] || {};
+      const template = await EmailTemplate.findOne({ category });
+
+      if (template) {
+        let successCount = 0,
+          failed = [];
+
+        const emailHeader = `
+          <div style="background:#000000;padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid #ffffff;">
+            <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;">
+              <span>${theme.emoji?.[0] || ""}</span>
+              <span>${theme.emoji?.[1] || ""}</span>
+            </div>
+            <h1>{{company}}</h1>
+            <p style="font-size:14px;color:#ffffff;opacity:0.95;">${todayFormatted}</p>
+          </div>
+        `;
+
+        const emailFooter = `
+          <div style="background:#000000;padding:20px;text-align:center;font-size:12px;color:#ffffff;border-top:2px solid #ffffff;">
+            <p style="font-weight:bold;">&copy; ${year} {{company}}. All rights reserved.</p>
+            <p style="opacity:0.8;">Celebrating every season with you!</p>
+          </div>
+        `;
+
+        await Promise.all(
+          customers.map(async (c) => {
+            try {
+              const html = `
+              <html><body>
+                <table><tr><td>
+                  ${emailHeader}
+                  <div style="padding:30px;">${template.body}</div>
+                  ${emailFooter}
+                </td></tr></table>
+              </body></html>
+            `
+                .replace(/{{fullName}}/g, c.fullName || "Valued Customer")
+                .replace(/{{company}}/g, company?.name || "Your Company");
+
+              await sendEmail({
+                to: c.email,
+                subject: template.subject,
+                html,
+                company: company?.name,
+              });
+
+              successCount++;
+            } catch (err) {
+              failed.push(c.email);
+            }
+          })
+        );
+
+        results.push({
+          type: category,
+          sent: successCount,
+          failed: failed.length,
+          failedEmails: failed,
+        });
+      }
     }
 
-    let successCount = 0;
-    let failedEmails = [];
-
-    await Promise.all(
-      anniversaryCustomers.map(async (customer) => {
-        try {
-          const fullHtml = `
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI', sans-serif;
-        background: #f4f4f4;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;">
-      <tr>
-        <td align="center">
-          <table width="600" cellpadding="0" cellspacing="0" style="background:white;border-radius:8px;overflow:hidden;">
-            <tr>
-              <td>${emailHeader}</td>
-            </tr>
-            <tr>
-              <td style="padding:30px;">${template.body}</td>
-            </tr>
-            <tr>
-              <td>${emailFooter}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>
-`;
-
-          const personalizedHtml = fullHtml
-            .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
-            .replace(/{{company}}/g, company?.name || "Your Company")
-            .replace(/{{date}}/g, todayFormatted)
-            .replace(/{{year}}/g, year);
-
-          await sendEmail({
-            to: customer.email,
-            subject: template.subject,
-            html: personalizedHtml,
-            company: company?.name,
-          });
-
-          successCount++;
-        } catch (err) {
-          console.error(`Failed to send to ${customer.email}:`, err.message);
-          failedEmails.push(customer.email);
-        }
-      })
+    // --- Handle Customer Anniversaries ---
+    const anniversaryTemplate = await EmailTemplate.findOne({
+      category: "CustomerAnniversary",
+    });
+    const anniversaryCustomers = customers.filter(
+      (c) => c.joinDate && monthDayMatch(c.joinDate)
     );
 
+    if (anniversaryTemplate && anniversaryCustomers.length > 0) {
+      let successCount = 0,
+        failed = [];
+
+      await Promise.all(
+        anniversaryCustomers.map(async (c) => {
+          try {
+            const html = `
+            <html><body>
+              <table><tr><td>
+                <div style="background:#000000;padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid #ffffff;">
+                  <h1>{{company}}</h1>
+                  <p style="font-size:14px;color:#ffffff;opacity:0.95;">${todayFormatted}</p>
+                </div>
+                <div style="padding:30px;">${anniversaryTemplate.body}</div>
+                <div style="background:#000000;padding:20px;text-align:center;font-size:12px;color:#ffffff;border-top:2px solid #ffffff;">
+                  <p style="font-weight:bold;">&copy; ${year} {{company}}. All rights reserved.</p>
+                </div>
+              </td></tr></table>
+            </body></html>
+          `
+              .replace(/{{fullName}}/g, c.fullName || "Valued Customer")
+              .replace(/{{company}}/g, company?.name || "Your Company");
+
+            await sendEmail({
+              to: c.email,
+              subject: anniversaryTemplate.subject,
+              html,
+              company: company?.name,
+            });
+
+            successCount++;
+          } catch (err) {
+            failed.push(c.email);
+          }
+        })
+      );
+
+      results.push({
+        type: "CustomerAnniversary",
+        sent: successCount,
+        failed: failed.length,
+        failedEmails: failed,
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(200).json({ message: "No events to process today." });
+    }
+
     res.status(200).json({
-      message: `${template.category} emails processed.`,
-      sent: successCount,
-      failed: failedEmails.length,
-      failedEmails,
+      message: "Emails processed.",
+      results,
     });
   } catch (err) {
     console.error("Cron error:", err);
