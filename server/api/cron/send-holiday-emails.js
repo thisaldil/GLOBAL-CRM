@@ -1,4 +1,5 @@
 const connectDB = require("../../database");
+const company = require("../../models/company");
 const Customer = require("../../models/customer");
 const EmailTemplate = require("../../models/emailTemplate");
 const sendEmail = require("../../utils/sendEmail");
@@ -173,7 +174,7 @@ module.exports = async (req, res) => {
 
           const personalizedHtml = fullHtml
             .replace(/{{fullName}}/g, customer.fullName || "Valued Customer")
-            .replace(/{{company}}/g, customer.company || "Your Company")
+            .replace(/{{company}}/g, company.company || "Your Company")
             .replace(/{{date}}/g, todayFormatted)
             .replace(/{{year}}/g, year);
 
