@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  Sun,
-  Moon,
-  Monitor,
-  Building2,
-  Trash2,
-  PencilLine,
-  Save,
-  PlusCircle,
-} from "lucide-react";
+import { Sun, Moon, Monitor, Building2, PencilLine, Save } from "lucide-react";
 
 const API_BASE = "https://global-crm-1zi3.vercel.app";
 
 const Settings = () => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system");
   const [user, setUser] = useState(null);
-
   const [company, setCompany] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -52,41 +42,28 @@ const Settings = () => {
   }, []);
 
   useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/company`);
+        const data = await res.json();
+        const firstCompany = Array.isArray(data) ? data[0] : data;
+        setCompany(firstCompany);
+        setFormData({
+          name: firstCompany?.name || "",
+          email: firstCompany?.email || "",
+          phone: firstCompany?.phone || "",
+          industry: firstCompany?.industry || "",
+        });
+      } catch (err) {
+        console.error("Failed to load company:", err);
+      }
+    };
     fetchCompany();
   }, []);
 
-  const fetchCompany = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/company`);
-      const data = await res.json();
-      const firstCompany = Array.isArray(data) ? data[0] : data;
-      setCompany(firstCompany);
-      if (firstCompany) {
-        setFormData({
-          name: firstCompany.name || "",
-          email: firstCompany.email || "",
-          phone: firstCompany.phone || "",
-          industry: firstCompany.industry || "",
-        });
-      }
-    } catch (err) {
-      console.error("Failed to load company:", err);
-    }
-  };
-
-  const handleCreateCompany = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/company`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      setCompany(data);
-      setIsEditing(false);
-    } catch (err) {
-      console.error("Create error:", err);
-    }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUpdateCompany = async () => {
@@ -96,31 +73,12 @@ const Settings = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      setCompany(data);
+      const updated = await res.json();
+      setCompany(updated);
       setIsEditing(false);
     } catch (err) {
       console.error("Update error:", err);
     }
-  };
-
-  const handleDeleteCompany = async () => {
-    if (!window.confirm("Are you sure you want to delete this company?"))
-      return;
-    try {
-      await fetch(`${API_BASE}/company/${company._id}`, {
-        method: "DELETE",
-      });
-      setCompany(null);
-      setFormData({ name: "", email: "", phone: "", industry: "" });
-    } catch (err) {
-      console.error("Delete error:", err);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -147,89 +105,84 @@ const Settings = () => {
           </div>
         )}
 
-        {/* Company Settings */}
-        <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl shadow-md">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Building2 className="w-5 h-5" />
-            Company Details
-          </h2>
+        {/* Company Details Section */}
+        {company && (
+          <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl shadow-md">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Building2 className="w-5 h-5" />
+              Company Information
+            </h2>
 
-          {company || isEditing ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  name="name"
-                  placeholder="Company Name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="px-3 py-2 rounded-lg w-full text-black dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
-                />
-                <input
-                  name="industry"
-                  placeholder="Industry"
-                  value={formData.industry}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="px-3 py-2 rounded-lg w-full text-black dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
-                />
-                <input
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="px-3 py-2 rounded-lg w-full text-black dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
-                />
-                <input
-                  name="phone"
-                  placeholder="Phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="px-3 py-2 rounded-lg w-full text-black dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
-                />
-              </div>
-
-              <div className="flex gap-3">
-                {isEditing ? (
-                  <>
-                    <button
-                      onClick={
-                        company ? handleUpdateCompany : handleCreateCompany
-                      }
-                      className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                    >
-                      <Save className="w-4 h-4" /> Save
-                    </button>
-                    <button
-                      onClick={() => setIsEditing(false)}
-                      className="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded-lg"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                    >
-                      <PencilLine className="w-4 h-4" /> Edit
-                    </button>
-                  </>
-                )}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <input
+                name="name"
+                placeholder="Company Name"
+                value={formData.name}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className="px-3 py-2 rounded-lg w-full text-black dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+              />
+              <input
+                name="industry"
+                placeholder="Industry"
+                value={formData.industry}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className="px-3 py-2 rounded-lg w-full text-black dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+              />
+              <input
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className="px-3 py-2 rounded-lg w-full text-black dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+              />
+              <input
+                name="phone"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className="px-3 py-2 rounded-lg w-full text-black dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+              />
             </div>
-          ) : (
-            // <button
-            //   onClick={() => setIsEditing(true)}
-            //   className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            // >
-            //   <PlusCircle className="w-4 h-4" /> Create Company
-            // </button>
-          )}
-        </div>
+
+            <div className="flex gap-3">
+              {isEditing ? (
+                <>
+                  <button
+                    onClick={handleUpdateCompany}
+                    className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                  >
+                    <Save className="w-4 h-4" /> Save Changes
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsEditing(false);
+                      setFormData({
+                        name: company.name || "",
+                        email: company.email || "",
+                        phone: company.phone || "",
+                        industry: company.industry || "",
+                      });
+                    }}
+                    className="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <PencilLine className="w-4 h-4" /> Edit
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Theme Settings */}
         <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl shadow-md max-w-md mx-auto">
