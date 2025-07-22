@@ -105,26 +105,28 @@ module.exports = async (req, res) => {
     }
 
     const emailHeader = `
-  <div style="background:${
-    theme.background
-  };padding:15px 25px;color:#000000;text-align:center;border-bottom:4px solid ${
-      theme.accent
+    <div style="background:#000000;padding:15px 25px;color:#ffffff;text-align:center;border-bottom:4px solid ${
+      theme.accent || "#ffffff"
     };position:relative;overflow:hidden;">
-    <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <span>${theme.emoji?.[0] || ""}</span>
-      <span>${theme.emoji?.[1] || ""}</span>
+      <div style="font-size:20px;opacity:0.85;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span>${theme.emoji?.[0] || ""}</span>
+        <span>${theme.emoji?.[1] || ""}</span>
+      </div>
+      <h1 style="margin:0;font-size:24px;font-weight:bold;text-shadow:0 2px 4px rgba(0,0,0,0.2);z-index:2;">{{company}}</h1>
+      <p style="margin:4px 0 0;font-size:14px;color:#ffffff;opacity:0.95;">{{date}}</p>
     </div>
-    <h1 style="margin:0;font-size:24px;font-weight:bold;text-shadow:0 2px 4px rgba(0,0,0,0.2);z-index:2;">{{company}}</h1>
-    <p style="margin:4px 0 0;font-size:14px;color:#e8f5e8;opacity:0.95;">{{date}}</p>
-  </div>
-`;
+  `;
 
     const emailFooter = `
-  <div style="background:${theme.background};padding:20px;text-align:center;font-size:12px;color:#e8f5e8;border-top:2px solid ${theme.accent};position:relative;">
-    <p style="margin:0;color:${theme.accent};font-weight:bold;position:relative;z-index:2;">&copy; {{year}} {{company}}. All rights reserved.</p>
-    <p style="margin:5px 0 0 0;color:#e8f5e8;opacity:0.8;position:relative;z-index:2;">Celebrating every season with you!</p>
-  </div>
-`;
+    <div style="background:#000000;padding:20px;text-align:center;font-size:12px;color:#ffffff;border-top:2px solid ${
+      theme.accent || "#ffffff"
+    };position:relative;">
+      <p style="margin:0;color:${
+        theme.accent || "#ffffff"
+      };font-weight:bold;position:relative;z-index:2;">&copy; {{year}} {{company}}. All rights reserved.</p>
+      <p style="margin:5px 0 0 0;color:#ffffff;opacity:0.8;position:relative;z-index:2;">Celebrating every season with you!</p>
+    </div>
+  `;
 
     const customers = await Customer.find({
       email: { $exists: true },
