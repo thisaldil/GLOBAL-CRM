@@ -31,6 +31,7 @@ module.exports = async (req, res) => {
       "11-11": "VeteransDay",
       "12-25": "Christmas",
       "12-31": "NewYearsEve",
+      "07-21": "CustomerAnniversary",
     };
 
     // Optional: Holiday-specific color variants
