@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const API_BASE = "https://global-crm-1zi3.vercel.app";
 
@@ -76,6 +78,25 @@ The {{company}} Team</p>`,
 
       {error && <p className="text-red-500 mb-4 dark:text-red-400">{error}</p>}
 
+      <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+        <span className="mr-2">Insert placeholders:</span>
+        {["{{fullName}}", "{{email}}", "{{company}}"].map((tag) => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() =>
+              setFormData((prev) => ({
+                ...prev,
+                body: prev.body + ` ${tag}`,
+              }))
+            }
+            className="inline-block text-blue-600 dark:text-blue-400 hover:underline mr-2"
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
@@ -142,13 +163,31 @@ The {{company}} Team</p>`,
           <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
             Body *
           </label>
-          <textarea
-            name="body"
+          <ReactQuill
+            theme="snow"
             value={formData.body}
-            onChange={handleChange}
-            required
-            rows={10}
-            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-md font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, body: value }))
+            }
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md"
+            modules={{
+              toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                ["bold", "italic", "underline"],
+                [{ list: "ordered" }, { list: "bullet" }],
+                ["link"],
+                ["clean"],
+              ],
+            }}
+            formats={[
+              "header",
+              "bold",
+              "italic",
+              "underline",
+              "list",
+              "bullet",
+              "link",
+            ]}
           />
         </div>
 
