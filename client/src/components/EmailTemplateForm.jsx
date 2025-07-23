@@ -204,12 +204,28 @@ const EmailTemplateForm = () => {
               </button>
               <button
                 type="button"
-                onClick={() =>
-                  editor
-                    ?.chain()
-                    .focus()
-                    .setLink({ href: "https://example.com" })
-                    .run()
+                onClick={() => {
+                  const previousUrl = editor?.getAttributes("link").href || "";
+                  const url = window.prompt("Enter URL", previousUrl);
+                  if (url === null) return; // cancelled
+                  if (url === "") {
+                    editor
+                      ?.chain()
+                      .focus()
+                      .extendMarkRange("link")
+                      .unsetLink()
+                      .run();
+                  } else {
+                    editor
+                      ?.chain()
+                      .focus()
+                      .extendMarkRange("link")
+                      .setLink({ href: url })
+                      .run();
+                  }
+                }}
+                className={
+                  editor?.isActive("link") ? "text-blue-600 underline" : ""
                 }
               >
                 Link
