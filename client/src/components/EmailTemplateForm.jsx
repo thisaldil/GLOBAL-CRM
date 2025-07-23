@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
 
 const API_BASE = "https://global-crm-1zi3.vercel.app";
 
@@ -21,26 +22,34 @@ const EmailTemplateForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const editor = useEditor({
+    extensions: [StarterKit, Link],
+    content: formData.body,
+    onUpdate: ({ editor }) => {
+      setFormData((prev) => ({
+        ...prev,
+        body: editor.getHTML(),
+      }));
+    },
+  });
+
   useEffect(() => {
     if (isEditMode) {
       setLoading(true);
       fetch(`${API_BASE}/email-templates/${id}`)
         .then((res) => res.json())
-        .then((data) => setFormData(data))
+        .then((data) => {
+          setFormData(data);
+          editor?.commands.setContent(data.body || "");
+        })
         .catch(() => setError("Failed to load template"))
         .finally(() => setLoading(false));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        body: `<p>Dear {{fullName}},</p>
-
-<p>Change your text here.</p>
-
-<p>Warm regards,<br/>
-The {{company}} Team</p>`,
-      }));
+      const defaultBody = `<p>Dear {{fullName}},</p><p>Change your text here.</p><p>Warm regards,<br/>The {{company}} Team</p>`;
+      setFormData((prev) => ({ ...prev, body: defaultBody }));
+      editor?.commands.setContent(defaultBody);
     }
-  }, [id]);
+  }, [id, editor]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,19 +87,17 @@ The {{company}} Team</p>`,
 
       {error && <p className="text-red-500 mb-4 dark:text-red-400">{error}</p>}
 
+      {/* Placeholder buttons */}
       <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-        <span className="mr-2">Insert placeholders:</span>
+        Insert placeholders:
         {["{{fullName}}", "{{email}}", "{{company}}"].map((tag) => (
           <button
             key={tag}
             type="button"
             onClick={() =>
-              setFormData((prev) => ({
-                ...prev,
-                body: prev.body + ` ${tag}`,
-              }))
+              editor?.chain().focus().insertContent(`${tag} `).run()
             }
-            className="inline-block text-blue-600 dark:text-blue-400 hover:underline mr-2"
+            className="ml-2 text-blue-600 dark:text-blue-400 hover:underline"
           >
             {tag}
           </button>
@@ -98,6 +105,7 @@ The {{company}} Team</p>`,
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Name */}
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
             Name *
@@ -112,6 +120,7 @@ The {{company}} Team</p>`,
           />
         </div>
 
+        {/* Subject */}
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
             Subject *
@@ -126,6 +135,7 @@ The {{company}} Team</p>`,
           />
         </div>
 
+        {/* Category */}
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
             Category
@@ -140,6 +150,7 @@ The {{company}} Team</p>`,
           />
         </div>
 
+        {/* Type */}
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
             Type *
@@ -153,44 +164,66 @@ The {{company}} Team</p>`,
           >
             <option value="custom">Custom</option>
             <option value="inbuild">In-Build</option>
-            {/* <option value="inbuild" disabled>
-              Inbuild (not editable)
-            </option> */}
           </select>
         </div>
 
+        {/* TipTap Editor */}
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
             Body *
           </label>
-          <ReactQuill
-            theme="snow"
-            value={formData.body}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, body: value }))
-            }
-            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md"
-            modules={{
-              toolbar: [
-                [{ header: [1, 2, 3, false] }],
-                ["bold", "italic", "underline"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link"],
-                ["clean"],
-              ],
-            }}
-            formats={[
-              "header",
-              "bold",
-              "italic",
-              "underline",
-              "list",
-              "bullet",
-              "link",
-            ]}
-          />
+          <div className="border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800">
+            {/* Toolbar */}
+            <div className="flex gap-2 p-2 border-b border-gray-300 dark:border-gray-700 text-sm">
+              <button
+                type="button"
+                onClick={() => editor?.chain().focus().toggleBold().run()}
+                className={
+                  editor?.isActive("bold") ? "font-bold text-blue-600" : ""
+                }
+              >
+                Bold
+              </button>
+              <button
+                type="button"
+                onClick={() => editor?.chain().focus().toggleItalic().run()}
+                className={
+                  editor?.isActive("italic") ? "italic text-blue-600" : ""
+                }
+              >
+                Italic
+              </button>
+              <button
+                type="button"
+                onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                className={
+                  editor?.isActive("bulletList") ? "text-blue-600" : ""
+                }
+              >
+                • List
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  editor
+                    ?.chain()
+                    .focus()
+                    .setLink({ href: "https://example.com" })
+                    .run()
+                }
+              >
+                Link
+              </button>
+            </div>
+
+            <EditorContent
+              editor={editor}
+              className="px-3 py-2 min-h-[200px] text-gray-900 dark:text-gray-100"
+            />
+          </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="flex justify-end space-x-4">
           <button
             type="button"
