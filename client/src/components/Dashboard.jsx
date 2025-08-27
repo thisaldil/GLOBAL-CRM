@@ -19,7 +19,8 @@ function Dashboard() {
     setUser(storedUser);
 
     // Fetch recent invoices
-    fetch("https://global-crm-our7.vercel.app//invoice/recent")
+    fetch("https://global-crm.vercel.app/
+//invoice/recent")
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((inv) => ({
