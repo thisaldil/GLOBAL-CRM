@@ -4,7 +4,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 
-const API_BASE = "https://global-crm-1zi3.vercel.app";
+const API_BASE = "https://global-crm.vercel.app";
 
 const EmailTemplateForm = () => {
   const { id } = useParams();

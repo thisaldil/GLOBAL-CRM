@@ -20,7 +20,7 @@ const Login = () => {
   const handleSuccess = async (response) => {
     try {
       const res = await fetch(
-        "https://global-crm-1zi3.vercel.app/auth/google/callback",
+        "https://global-crm.vercel.app/auth/google/callback",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -61,7 +61,7 @@ const Login = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="489842058415-t8qnn4bng8qkt6fi6ck92rmgal7aj40q.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="536656085214-lflgf5vpabtlh57mt6jj5f4v2qpdu6o0.apps.googleusercontent.com">
       <div
         style={{
           backgroundImage: `url(${bg})`,
@@ -88,7 +88,7 @@ const Login = () => {
               className="text-xl leading-relaxed font-medium text-center max-w-lg text-gray-700"
             >
               Manage your invoices with ease. Automate, track, and send invoices
-              effortlessly using CRM.
+              effortlessly using AirInvoice Pro.
             </motion.p>
           </div>
         </div>

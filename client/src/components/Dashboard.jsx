@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const API_BASE = "https://global-crm-1zi3.vercel.app"; // Consistent API base URL
+const API_BASE = "https://global-crm.vercel.app"; // Consistent API base URL
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -26,31 +26,6 @@ function Dashboard() {
 
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
-
-
-    // Fetch recent invoices
-    fetch("https://global-crm.vercel.app/invoice/recent")
-      .then((res) => res.json())
-      .then((data) => {
-        const formatted = data.map((inv) => ({
-          id: inv._id,
-          customer: inv.invoiceDetails?.passengerName || "N/A",
-          passport: inv.invoiceDetails?.passportNumber || "N/A",
-          nationality: inv.invoiceDetails?.nationality || "N/A",
-          amount: inv.priceDetails?.totalAmount
-            ? `$${inv.priceDetails.totalAmount}`
-            : "N/A",
-          date: inv.createdAt
-            ? new Date(inv.createdAt).toLocaleDateString()
-            : "N/A",
-          status: "Sent",
-        }));
-        setRecentInvoices(formatted);
-      })
-      .catch((err) => {
-        console.error("Failed to load recent invoices", err);
-      });
-  }, []);
 
     const fetchAllDashboardData = async () => {
       try {
@@ -163,7 +138,6 @@ function Dashboard() {
       </div>
     );
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 sm:p-8 lg:p-10 font-inter">

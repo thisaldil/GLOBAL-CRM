@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const API_BASE = "https://global-crm-1zi3.vercel.app";
+const API_BASE = "https://global-crm.vercel.app";
 
 const EmailTemplateList = () => {
   const [templates, setTemplates] = useState([]);

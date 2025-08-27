@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Sun, Moon, Monitor, Building2, PencilLine, Save } from "lucide-react";
 
-const API_BASE = "https://global-crm-1zi3.vercel.app";
+const API_BASE = "https://global-crm.vercel.app";
 
 const Settings = () => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system");
