@@ -10,12 +10,25 @@ import { Toaster } from "react-hot-toast";
 
 import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
+import InvoiceUpload from "./components/invoice/InvoiceUpload.jsx";
+import InvoicePreview from "./components/invoice/InvoicePreview.jsx";
+import TemplateManager from "./components/templates/TemplateManager.jsx";
+import TemplateEditor from "./components/templates/TemplateEditor.jsx";
+import SendOptions from "./components/send/SendOptions.jsx";
 import Login from "./components/auth/Login";
-import Register from "./components/auth/Register";
+import Register from "./components/auth/Register.jsx";
+import AllInvoices from "./components/AllInvoices";
 import Settings from "./components/Settings";
 import Crm from "./components/Crm";
+import AddCustomer from "./components/AddCustomer";
+import EmailTemplateList from "./components/EmailTemplateList";
+import EmailTemplateForm from "./components/EmailTemplateForm";
+import EmailTemplatePreview from "./components/EmailTemplatePreview";
 
 function AppWrapper() {
+  const [uploadedInvoice, setUploadedInvoice] = useState(null);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [generatedInvoice, setGeneratedInvoice] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
@@ -61,7 +74,117 @@ function AppWrapper() {
 
         <Route path="/dashboard" element={<Layout />}>
           <Route index element={<Dashboard />} />
+
+          <Route
+            path="upload"
+            element={
+              <InvoiceUpload
+                onUpload={(invoice) => {
+                  setUploadedInvoice(invoice);
+                  navigate("/dashboard/preview");
+                }}
+              />
+            }
+          />
+
+          <Route
+            path="preview"
+            element={
+              <InvoicePreview
+                invoice={uploadedInvoice}
+                onContinue={() => navigate("/dashboard/templates")}
+                onBack={() => navigate("/dashboard/upload")}
+                onEdit={(field, value) => {
+                  setUploadedInvoice((prev) => ({
+                    ...prev,
+                    [field]: value,
+                  }));
+                }}
+              />
+            }
+          />
+
+          <Route
+            path="templates"
+            element={
+              <TemplateManager
+                invoiceData={uploadedInvoice}
+                onSelectTemplate={({ template }) => {
+                  setSelectedTemplate(template);
+                  navigate(`/dashboard/template-editor/${template._id}`);
+                }}
+                onCreateTemplate={() => navigate("/dashboard/template-editor")}
+              />
+            }
+          />
+
+          <Route
+            path="template-editor"
+            element={
+              <TemplateEditor
+                invoiceData={uploadedInvoice}
+                onSave={({ template, invoiceId }) => {
+                  setSelectedTemplate(template);
+                  setGeneratedInvoice({ template, invoiceId });
+                  navigate("/dashboard/send");
+                }}
+                onCancel={() => navigate("/dashboard/templates")}
+              />
+            }
+          />
+
+          <Route
+            path="template-editor/:id"
+            element={
+              <TemplateEditor
+                invoiceData={uploadedInvoice}
+                onSave={({ template, invoiceId }) => {
+                  setSelectedTemplate(template);
+                  setGeneratedInvoice({ template, invoiceId });
+                  navigate("/dashboard/send");
+                }}
+                onCancel={() => navigate("/dashboard/templates")}
+              />
+            }
+          />
+
+          <Route
+            path="send"
+            element={
+              <SendOptions
+                invoice={generatedInvoice}
+                onBack={() => navigate("/dashboard/invoices")}
+              />
+            }
+          />
+
+          <Route
+            path="invoices"
+            element={
+              <AllInvoices
+                setGeneratedInvoice={(invoice) => {
+                  setGeneratedInvoice(invoice);
+                }}
+              />
+            }
+          />
+          <Route path="addcustomer" element={<AddCustomer />} />
           <Route path="crm" element={<Crm />} />
+          <Route path="email-templates" element={<EmailTemplateList />} />
+          <Route
+            path="email-templates/create"
+            element={<EmailTemplateForm />}
+          />
+          <Route
+            path="email-templates/edit/:id"
+            element={<EmailTemplateForm />}
+          />
+          <Route
+            path="email-templates/view/:id"
+            element={<EmailTemplatePreview />}
+          />
+
+          <Route path="email-preview" element={<EmailTemplatePreview />} />
           <Route path="settings" element={<Settings />} />
         </Route>
 

@@ -11,7 +11,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import logo from "../images/logo.png";
+
 import darklogo from "../images/drklogo.png";
 
 function Layout() {
@@ -21,10 +21,14 @@ function Layout() {
 
   const menuItems = [
     { path: "/dashboard", label: "Dashboard", icon: HomeIcon },
-    { path: "/dashboard/upload", label: "New Invoice", icon: FileTextIcon },
-    { path: "/dashboard/templates", label: "Templates", icon: BoxIcon },
-    { path: "/dashboard/invoices", label: "All Invoices", icon: FilesIcon },
-    { path: "/dashboard/crm", label: "CRM", icon: Users },
+    // { path: "/dashboard/upload", label: "New Invoice", icon: FileTextIcon },
+    // { path: "/dashboard/templates", label: "Templates", icon: BoxIcon },
+    // { path: "/dashboard/invoices", label: "All Invoices", icon: FilesIcon },
+    {
+      path: "/dashboard/email-templates",
+      label: "EmailTemplateList",
+      icon: Users,
+    },
     { path: "/dashboard/settings", label: "Settings", icon: SettingsIcon },
   ];
 
@@ -38,10 +42,14 @@ function Layout() {
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow px-4 py-3 flex justify-between items-center">
-        <img src={logo} alt="logo" className="h-6 dark:hidden" />
+        <img src={darklogo} alt="logo" className="h-6 dark:hidden" />
         <img src={darklogo} alt="logo" className="h-6 hidden dark:block" />
         <button onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {sidebarOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
         </button>
       </div>
 
@@ -52,8 +60,16 @@ function Layout() {
         } md:translate-x-0`}
       >
         <div className="hidden md:block p-6 border-b border-gray-200 dark:border-gray-700">
-          <img src={logo} alt="logo" className="max-w-32 block dark:hidden" />
-          <img src={darklogo} alt="dark logo" className="max-w-32 hidden dark:block" />
+          <img
+            src={darklogo}
+            alt="dark logo"
+            className="max-w-32 block dark:hidden"
+          />
+          <img
+            src={darklogo}
+            alt="dark logo"
+            className="max-w-32 hidden dark:block"
+          />
         </div>
 
         <nav className="mt-6">

@@ -22,20 +22,27 @@ const Register = () => {
       const token = response.credential;
 
       const verify = await fetch(
-        "https://global-crm-our7.vercel.app/auth/google/register",
+
+        "https://global-crm.vercel.app/auth/google/register",
+
+        "https://global-crm-1zi3.vercel.app/auth/google/register",
+
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token }),
         }
       );
-
+      // ... inside handleSuccess function
       if (!verify.ok) {
-        const msg = await verify.json();
-        toast.error("Registration failed. Please try again.");
+        const errorData = await verify.json(); // Get the JSON response
+        // Use the message from the backend, or a default if not available
+        toast.error(
+          errorData.message || "Registration failed. Please try again."
+        );
         return;
       }
-
+      // ... rest of the code
       const data = await verify.json();
 
       if (data.token) {
@@ -57,7 +64,7 @@ const Register = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="536656085214-lflgf5vpabtlh57mt6jj5f4v2qpdu6o0.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="489842058415-t8qnn4bng8qkt6fi6ck92rmgal7aj40q.apps.googleusercontent.com">
       <div
         style={{
           backgroundImage: `url(${bg})`,
@@ -73,7 +80,7 @@ const Register = () => {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6 }}
-              src="/logo.png"
+              src="/drklogo.png"
               alt="Logo"
               className="w-72 mb-6"
             />
@@ -83,7 +90,7 @@ const Register = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-xl leading-relaxed font-medium text-center max-w-lg text-gray-700"
             >
-              Join AirInvoice Pro to manage your invoices with ease. Automate,
+              Join GLOBAL CRM to manage your invoices with ease. Automate,
               track, and send invoices effortlessly.
             </motion.p>
           </div>

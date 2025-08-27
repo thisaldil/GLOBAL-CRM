@@ -1,0 +1,34 @@
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const API_BASE = "https://global-crm-1zi3.vercel.app";
+
+const EmailTemplatePreview = () => {
+  const { id } = useParams();
+  const [template, setTemplate] = useState(null);
+
+  useEffect(() => {
+    const fetchTemplate = async () => {
+      const res = await axios.get(`${API_BASE}/email-templates/${id}`);
+      setTemplate(res.data);
+    };
+    fetchTemplate();
+  }, [id]);
+
+  if (!template) return <p>Loading...</p>;
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-900 rounded shadow dark:shadow-lg">
+      <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+        {template.name}
+      </h2>
+      <div
+        className="prose max-w-none dark:prose-invert"
+        dangerouslySetInnerHTML={{ __html: template.body }} // ✅ correct
+      />
+    </div>
+  );
+};
+
+export default EmailTemplatePreview;
