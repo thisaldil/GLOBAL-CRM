@@ -20,8 +20,7 @@ const Login = () => {
   const handleSuccess = async (response) => {
     try {
       const res = await fetch(
-        "https://global-crm.vercel.app/
-//auth/google/callback",
+        "https://global-crm-our7.vercel.app//auth/google/callback",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
