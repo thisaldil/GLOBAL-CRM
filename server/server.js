@@ -33,8 +33,8 @@ const corsOptions = {
 // Apply CORS middleware to all requests
 const allowedOrigins = [
   "https://landotravels.com", // ✅ Public site
-  "https://global-crm-1zi3.vercel.app", // ✅ Actual deployed backend
-  "https://global-crm.vercel.app", // ✅ If needed for frontend
+  "https://global-crm.vercel.app", // ✅ Actual deployed backend
+  "https://globalcrm.vercel.app/", // ✅ If needed for frontend
 ];
 
 app.use(
