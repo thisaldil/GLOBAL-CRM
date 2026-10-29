@@ -3,11 +3,8 @@ import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import {
   Users,
   HomeIcon,
-  FileTextIcon,
   SettingsIcon,
   LogOutIcon,
-  BoxIcon,
-  FilesIcon,
   Menu,
   X,
 } from "lucide-react";
@@ -32,8 +29,11 @@ function Layout() {
     { path: "/dashboard/settings", label: "Settings", icon: SettingsIcon },
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    await fetch(`${process.env.REACT_APP_API_URL || "https://global-crm.vercel.app"}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
     localStorage.removeItem("user");
     navigate("/login");
   };

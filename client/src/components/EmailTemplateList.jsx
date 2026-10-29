@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const API_BASE = "https://global-crm.vercel.app";
+const API_BASE = process.env.REACT_APP_API_URL || "https://global-crm.vercel.app";
 
 const EmailTemplateList = () => {
   const [templates, setTemplates] = useState([]);
@@ -10,9 +10,9 @@ const EmailTemplateList = () => {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("custom");
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/email-templates`);
+      const res = await fetch(`${API_BASE}/email-templates`, { credentials: "include" });
       const data = await res.json();
       const filtered = data.filter((t) => t.type === activeTab);
       setTemplates(filtered);
@@ -21,13 +21,14 @@ const EmailTemplateList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
 
   const sendBulkEmail = async (templateId) => {
     try {
       const res = await fetch(`${API_BASE}/email/send-bulk`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ templateId }),
       });
       const data = await res.json();
@@ -45,6 +46,7 @@ const EmailTemplateList = () => {
     try {
       const res = await fetch(`${API_BASE}/email-templates/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
       if (res.ok) {
         setTemplates((prev) => prev.filter((t) => t._id !== id));
@@ -58,7 +60,7 @@ const EmailTemplateList = () => {
 
   useEffect(() => {
     fetchTemplates();
-  }, [activeTab]);
+  }, [activeTab, fetchTemplates]);
 
   if (loading) return <div className="p-6">Loading templates...</div>;
   if (error) return <div className="p-6 text-red-500">{error}</div>;

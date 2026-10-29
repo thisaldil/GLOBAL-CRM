@@ -27,9 +27,8 @@ import EmailTemplatePreview from "./components/EmailTemplatePreview";
 
 function AppWrapper() {
   const [uploadedInvoice, setUploadedInvoice] = useState(null);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [generatedInvoice, setGeneratedInvoice] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,9 +41,8 @@ function AppWrapper() {
       } else if (mode === "light") {
         html.classList.remove("dark");
       } else {
-        const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches;
+        const prefersDark =
+          window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false;
         html.classList.toggle("dark", prefersDark);
       }
     };
@@ -53,9 +51,21 @@ function AppWrapper() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
+    Promise.resolve(fetch(`${process.env.REACT_APP_API_URL || "https://global-crm.vercel.app"}/auth/me`, {
+      credentials: "include",
+    }))
+      .then(async (response) => {
+        setIsAuthenticated(response.ok);
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem("user", JSON.stringify(data.user));
+          localStorage.setItem("userId", data.user.id);
+        }
+      })
+      .catch(() => setIsAuthenticated(false));
   }, []);
+
+  if (isAuthenticated === null) return null;
 
   if (
     !isAuthenticated &&
@@ -110,7 +120,6 @@ function AppWrapper() {
               <TemplateManager
                 invoiceData={uploadedInvoice}
                 onSelectTemplate={({ template }) => {
-                  setSelectedTemplate(template);
                   navigate(`/dashboard/template-editor/${template._id}`);
                 }}
                 onCreateTemplate={() => navigate("/dashboard/template-editor")}
@@ -124,7 +133,6 @@ function AppWrapper() {
               <TemplateEditor
                 invoiceData={uploadedInvoice}
                 onSave={({ template, invoiceId }) => {
-                  setSelectedTemplate(template);
                   setGeneratedInvoice({ template, invoiceId });
                   navigate("/dashboard/send");
                 }}
@@ -139,7 +147,6 @@ function AppWrapper() {
               <TemplateEditor
                 invoiceData={uploadedInvoice}
                 onSave={({ template, invoiceId }) => {
-                  setSelectedTemplate(template);
                   setGeneratedInvoice({ template, invoiceId });
                   navigate("/dashboard/send");
                 }}

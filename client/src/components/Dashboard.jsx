@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Users, Mail, UserPlus } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const API_BASE = "https://global-crm.vercel.app"; // Consistent API base URL
+const API_BASE = process.env.REACT_APP_API_URL || "https://global-crm.vercel.app";
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -15,15 +15,7 @@ function Dashboard() {
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
     const storedUser = JSON.parse(localStorage.getItem("user"));
     setUser(storedUser);
 
@@ -35,13 +27,9 @@ function Dashboard() {
 
         const [customersRes, statsRes, templateCountRes, templatesRes] =
           await Promise.all([
-            fetch(`${API_BASE}/customers`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            fetch(`${API_BASE}/customers/stats`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            fetch(`${API_BASE}/email-templates/count`),
+            fetch(`${API_BASE}/customers`, { credentials: "include" }),
+            fetch(`${API_BASE}/customers/stats`, { credentials: "include" }),
+            fetch(`${API_BASE}/email-templates/count`, { credentials: "include" }),
             axios.get(`${API_BASE}/email-templates?limit=3`),
           ]);
 
@@ -94,7 +82,7 @@ function Dashboard() {
     };
 
     fetchAllDashboardData();
-  }, [navigate]);
+  }, []);
 
   // 🎨 Status badge helper
   const getStatusColor = (status) => {

@@ -24,7 +24,7 @@ function TemplateManager({ invoiceData, onSelectTemplate, onCreateTemplate }) {
       }
     };
     fetchTemplates();
-  }, []);
+  }, [userId]);
 
   const handleSetDefault = async (templateId) => {
     try {

@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Users,
   Plus,
   Search,
-  Upload,
-  Download,
   Mail,
   TrendingUp,
   UserCheck,
@@ -16,7 +14,7 @@ import {
 import toast from "react-hot-toast";
 import CustomerForm from "./CustomerForm";
 
-const API_BASE = "https://global-crm.vercel.app";
+const API_BASE = process.env.REACT_APP_API_URL || "https://global-crm.vercel.app";
 
 const CustomerManagementApp = () => {
   const [customers, setCustomers] = useState([]);
@@ -68,7 +66,7 @@ const CustomerManagementApp = () => {
     }
   };
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     setLoading(true);
     try {
       // Build query string for search, status, and tag filters
@@ -78,7 +76,7 @@ const CustomerManagementApp = () => {
       if (tagFilter) params.append("tag", tagFilter);
 
       const url = `${API_BASE}/customers?${params.toString()}`;
-      const res = await fetch(url);
+      const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch customers");
       const data = await res.json();
       setCustomers(data);
@@ -88,11 +86,11 @@ const CustomerManagementApp = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, statusFilter, tagFilter]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/customers/stats`);
+      const res = await fetch(`${API_BASE}/customers/stats`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch stats");
       const data = await res.json();
       setStats(data);
@@ -100,13 +98,14 @@ const CustomerManagementApp = () => {
       toast.error(`Failed to fetch stats: ${error.message}`);
       console.error("Fetch stats error:", error);
     }
-  };
+  }, []);
 
   const createCustomer = async (customerData) => {
     try {
       const res = await fetch(`${API_BASE}/customers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(customerData),
       });
       if (!res.ok) {
@@ -127,6 +126,7 @@ const CustomerManagementApp = () => {
       const res = await fetch(`${API_BASE}/customers/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(customerData),
       });
       if (!res.ok) {
@@ -151,6 +151,7 @@ const CustomerManagementApp = () => {
     try {
       const res = await fetch(`${API_BASE}/customers/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
       if (!res.ok) {
         const errorData = await res.json();
@@ -168,7 +169,7 @@ const CustomerManagementApp = () => {
   useEffect(() => {
     fetchCustomers();
     fetchStats();
-  }, [searchTerm, statusFilter, tagFilter]);
+  }, [fetchCustomers, fetchStats]);
 
   // Client-side filtering and sorting logic
   useEffect(() => {

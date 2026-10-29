@@ -75,7 +75,7 @@ function TemplateEditor({ invoiceData, onSave, onCancel }) {
           navigate("/template-manager");
         });
     }
-  }, [id]);
+  }, [id, navigate]);
 
   const checkDuplicateInvoice = async (userId, bookingRef) => {
     try {

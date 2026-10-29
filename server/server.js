@@ -5,6 +5,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const connectDB = require("./database"); // Assuming the connection logic is in this file
 const crypto = require("crypto");
@@ -22,25 +23,15 @@ connectDB().catch((err) => {
 
 // ✅ 4. Set up Middlewares
 
-// Define CORS options once for clarity and reusability
-const corsOptions = {
-  origin: process.env.FRONTEND_URL, // Use environment variable for flexibility
-  credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", // Explicitly allow all methods
-  exposedHeaders: ["Content-Type", "Authorization"], // Expose necessary headers
-};
-
-// Apply CORS middleware to all requests
 const allowedOrigins = [
-  "https://landotravels.com", // ✅ Public site
-  "https://global-crm.vercel.app", // ✅ Actual deployed backend
-  "https://globalcrm.vercel.app/", // ✅ If needed for frontend
-];
+  process.env.FRONTEND_URL,
+  "http://localhost:3000",
+].filter(Boolean).map((origin) => origin.replace(/\/$/, ""));
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -59,6 +50,7 @@ app.options("*", cors()); // to support preflight requests
 
 // Body Parser Middleware to parse JSON request bodies
 app.use(express.json());
+app.use(cookieParser());
 
 // 🚨 Cookie Session Middleware for Passport.js
 // This creates a cookie-based session to store user information after authentication.
@@ -85,6 +77,8 @@ require("./services/passport"); // Path to your Passport configuration
 
 // ✅ 6. Require and use Route handlers
 const authRoutes = require("./routes/authRoutes");
+const { authenticate } = require("./middleware/auth");
+const { requireTrustedOrigin } = require("./middleware/csrf");
 const userRoutes = require("./routes/userRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
@@ -94,7 +88,9 @@ const emailTemplateRoutes = require("./routes/emailTemplateRoutes");
 const emailRoutes = require("./routes/emailRoutes");
 const companyRoutes = require("./routes/companyRoutes");
 
+app.use(requireTrustedOrigin(allowedOrigins));
 app.use("/auth", authRoutes);
+app.use(authenticate);
 app.use("/user", userRoutes);
 app.use("/template", templateRoutes);
 app.use("/invoice", invoiceRoutes);

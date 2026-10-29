@@ -1,6 +1,7 @@
 const { OAuth2Client } = require("google-auth-library");
-const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const { setAuthCookie, COOKIE_NAME } = require("../middleware/auth");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -24,12 +25,78 @@ const handleGoogleRedirect = async (req, res) => {
         return res.status(401).json({ message: "Authentication failed" });
     }
 
-    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
-
-    await User.findByIdAndUpdate(req.user._id, { token });
-
-    res.status(200).json({ message: "Authentication successful", user: req.user, token });
+    setAuthCookie(res, req.user._id);
+    res.status(200).json({ message: "Authentication successful", user: publicUser(req.user) });
 };
+
+const publicUser = (user) => ({
+    id: user._id,
+    username: user.username,
+    name: user.name,
+    email: user.email,
+    picture: user.picture,
+});
+
+const usernamePattern = /^[a-zA-Z0-9._-]{3,32}$/;
+const validateCredentials = (username, password) =>
+    typeof username === "string" &&
+    usernamePattern.test(username) &&
+    typeof password === "string" &&
+    password.length >= 8 &&
+    password.length <= 128;
+
+const handleRegister = async (req, res) => {
+    const { username, password } = req.body;
+    if (!validateCredentials(username, password)) {
+        return res.status(400).json({
+            message: "Username must be 3-32 letters, numbers, dots, underscores, or hyphens; password must be 8-128 characters.",
+        });
+    }
+
+    try {
+        const normalizedUsername = username.toLowerCase();
+        const existingUser = await User.findOne({ username: normalizedUsername });
+        if (existingUser) return res.status(409).json({ message: "Username is already in use." });
+
+        const passwordHash = await bcrypt.hash(password, 12);
+        const user = await User.create({
+            username: normalizedUsername,
+            passwordHash,
+            name: normalizedUsername,
+        });
+        setAuthCookie(res, user._id);
+        return res.status(201).json({ message: "Registration successful", user: publicUser(user) });
+    } catch (error) {
+        console.error("Registration error:", error);
+        return res.status(500).json({ message: "Unable to complete registration." });
+    }
+};
+
+const handleLogin = async (req, res) => {
+    const { username, password } = req.body;
+    if (typeof username !== "string" || typeof password !== "string") {
+        return res.status(401).json({ message: "Invalid username or password." });
+    }
+
+    try {
+        const user = await User.findOne({ username: username.toLowerCase() }).select("+passwordHash");
+        const passwordMatches = user ? await bcrypt.compare(password, user.passwordHash) : false;
+        if (!passwordMatches) return res.status(401).json({ message: "Invalid username or password." });
+
+        setAuthCookie(res, user._id);
+        return res.status(200).json({ message: "Login successful", user: publicUser(user) });
+    } catch (error) {
+        console.error("Login error:", error);
+        return res.status(500).json({ message: "Unable to complete login." });
+    }
+};
+
+const handleLogout = (req, res) => {
+    res.clearCookie(COOKIE_NAME, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", path: "/" });
+    res.status(204).end();
+};
+
+const handleMe = (req, res) => res.json({ user: publicUser(req.user) });
 
 const handleGoogleToken = async (req, res) => {
     try {
@@ -52,20 +119,11 @@ const handleGoogleToken = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
-
-        await User.findByIdAndUpdate(user._id, { token: jwtToken });
+        setAuthCookie(res, user._id);
 
         res.status(200).json({
             message: "Authentication successful",
-            user: {
-                googleId: user.googleId,
-                name: user.name,
-                email: user.email,
-                picture: user.picture,
-            },
-            token: jwtToken,
-            userId: user._id,
+            user: publicUser(user),
         });
     } catch (error) {
         console.error("Google Token Handling Error:", error);
@@ -97,19 +155,11 @@ const handleGoogleRegister = async (req, res) => {
             picture: payload.picture,
         });
 
-        const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
-        await User.findByIdAndUpdate(user._id, { token: jwtToken });
+        setAuthCookie(res, user._id);
 
         res.status(200).json({
             message: "Registration successful",
-            user: {
-                googleId: user.googleId,
-                name: user.name,
-                email: user.email,
-                picture: user.picture,
-            },
-            token: jwtToken,
-            userId: user._id,
+            user: publicUser(user),
         });
     } catch (error) {
         console.error("Google Register Error:", error);
@@ -121,5 +171,9 @@ module.exports = {
     handleGoogleRedirect,
     handleGoogleToken,
     handleGoogleRegister,
+    handleRegister,
+    handleLogin,
+    handleLogout,
+    handleMe,
     createUser,
 };

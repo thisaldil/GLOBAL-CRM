@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Sun, Moon, Monitor, Building2, PencilLine, Save } from "lucide-react";
 
-const API_BASE = "https://global-crm.vercel.app";
+const API_BASE = process.env.REACT_APP_API_URL || "https://global-crm.vercel.app";
 
 const Settings = () => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system");
@@ -44,7 +44,7 @@ const Settings = () => {
   useEffect(() => {
     const fetchCompany = async () => {
       try {
-        const res = await fetch(`${API_BASE}/company`);
+        const res = await fetch(`${API_BASE}/company`, { credentials: "include" });
         const data = await res.json();
         const firstCompany = Array.isArray(data) ? data[0] : data;
         setCompany(firstCompany);
@@ -71,6 +71,7 @@ const Settings = () => {
       const res = await fetch(`${API_BASE}/company/${company._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
       const updated = await res.json();

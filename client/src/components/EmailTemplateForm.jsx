@@ -4,7 +4,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 
-const API_BASE = "https://global-crm.vercel.app";
+const API_BASE = process.env.REACT_APP_API_URL || "https://global-crm.vercel.app";
 
 const EmailTemplateForm = () => {
   const { id } = useParams();
@@ -36,7 +36,7 @@ const EmailTemplateForm = () => {
   useEffect(() => {
     if (isEditMode) {
       setLoading(true);
-      fetch(`${API_BASE}/email-templates/${id}`)
+      fetch(`${API_BASE}/email-templates/${id}`, { credentials: "include" })
         .then((res) => res.json())
         .then((data) => {
           setFormData(data);
@@ -49,7 +49,7 @@ const EmailTemplateForm = () => {
       setFormData((prev) => ({ ...prev, body: defaultBody }));
       editor?.commands.setContent(defaultBody);
     }
-  }, [id, editor]);
+  }, [id, editor, isEditMode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,6 +67,7 @@ const EmailTemplateForm = () => {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify(formData),
         }
       );

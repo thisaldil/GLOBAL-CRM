@@ -4,7 +4,6 @@ import { ArrowLeftIcon, ArrowRightIcon, TrashIcon } from "lucide-react";
 function InvoicePreview({ invoice = {}, onContinue, onBack, onEdit }) {
   const [countries, setCountries] = useState([]);
   const [currencies, setCurrencies] = useState([]);
-  const [exchangeRates, setExchangeRates] = useState({});
   const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
@@ -21,7 +20,6 @@ function InvoicePreview({ invoice = {}, onContinue, onBack, onEdit }) {
       .then((res) => res.json())
       .then((data) => {
         if (data.result === "success") {
-          setExchangeRates(data.rates);
           // Create currency list from rates
           const currencyList = Object.keys(data.rates).sort();
           setCurrencies(currencyList);

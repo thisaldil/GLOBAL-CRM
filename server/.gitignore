@@ -129,3 +129,4 @@ dist
 .env.development
 .env.test
 .vercel
+key/*.json
